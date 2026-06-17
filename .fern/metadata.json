@@ -1,0 +1,13 @@
+{
+  "cliVersion": "5.49.1",
+  "generatorName": "fernapi/fern-python-sdk",
+  "generatorVersion": "5.14.19",
+  "generatorConfig": {
+    "client_class_name": "PumpUp",
+    "package_name": "pumpup"
+  },
+  "originGitCommit": "d8414f398efe75330a371e2c6784f7a5f3aec3a2",
+  "originGitCommitIsDirty": true,
+  "invokedBy": "manual",
+  "sdkVersion": "0.0.1"
+}
