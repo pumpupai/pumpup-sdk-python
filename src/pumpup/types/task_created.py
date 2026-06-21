@@ -3,11 +3,20 @@
 import typing
 
 import pydantic
+import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.serialization import FieldMetadata
+from .metadata_patch import MetadataPatch
 
 
-class ErrorResponse(UniversalBaseModel):
-    error: str
+class TaskCreated(UniversalBaseModel):
+    initial_state: typing_extensions.Annotated[
+        str, FieldMetadata(alias="initialState"), pydantic.Field(alias="initialState")
+    ]
+    metadata_patch: typing_extensions.Annotated[
+        MetadataPatch, FieldMetadata(alias="metadataPatch"), pydantic.Field(alias="metadataPatch")
+    ]
+    name: str
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

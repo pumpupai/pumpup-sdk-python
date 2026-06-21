@@ -13,7 +13,7 @@ class DateField(UniversalBaseModel):
     label: str
     max: typing.Optional[dt.date] = None
     min: typing.Optional[dt.date] = None
-    required: typing.Optional[bool] = None
+    required: bool
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

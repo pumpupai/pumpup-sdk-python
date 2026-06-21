@@ -4,14 +4,11 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.attachment import Attachment
 from ..types.elicitation_result import ElicitationResult
 from ..types.event_response import EventResponse
+from ..types.field import Field
 from ..types.field_bid import FieldBid
-from ..types.metadata_patch_dto import MetadataPatchDto
-from ..types.object_id import ObjectId
 from .raw_client import AsyncRawElicitationsClient, RawElicitationsClient
-from .types.create_elicitation_request_fields_item import CreateElicitationRequestFieldsItem
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -36,16 +33,14 @@ class ElicitationsClient:
         self,
         *,
         idempotency_key: str,
-        fields: typing.Sequence[CreateElicitationRequestFieldsItem],
+        fields: typing.Sequence[Field],
         project_name: str,
         summary: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
-        attachments: typing.Optional[typing.Sequence[ObjectId]] = OMIT,
+        task_id: str,
+        attachments: typing.Optional[typing.Sequence[str]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         key_value_context: typing.Optional[typing.Dict[str, str]] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         recommendation: typing.Optional[typing.Sequence[FieldBid]] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
         """
@@ -56,28 +51,24 @@ class ElicitationsClient:
         idempotency_key : str
             Idempotency key; duplicate submissions return the original event.
 
-        fields : typing.Sequence[CreateElicitationRequestFieldsItem]
+        fields : typing.Sequence[Field]
 
         project_name : str
 
         summary : str
             Human-readable summary of what's needed
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        attachments : typing.Optional[typing.Sequence[ObjectId]]
+        attachments : typing.Optional[typing.Sequence[str]]
             Upload ids of attached files to render for this request (must already be attached to the task)
 
         external_trace_id : typing.Optional[str]
 
         key_value_context : typing.Optional[typing.Dict[str, str]]
 
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
         recommendation : typing.Optional[typing.Sequence[FieldBid]]
-
-        task_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -89,7 +80,7 @@ class ElicitationsClient:
 
         Examples
         --------
-        from pumpup import DateField, PumpUp
+        from pumpup import Field_DateField, PumpUp
 
         client = PumpUp(
             "0",
@@ -98,13 +89,15 @@ class ElicitationsClient:
         client.elicitations.create(
             idempotency_key="Idempotency-Key",
             fields=[
-                DateField(
+                Field_DateField(
                     id="id",
                     label="label",
+                    required=True,
                 )
             ],
             project_name="projectName",
             summary="Need additional details on the incident",
+            task_id="taskId",
         )
         """
         _response = self._raw_client.create(
@@ -112,31 +105,31 @@ class ElicitationsClient:
             fields=fields,
             project_name=project_name,
             summary=summary,
-            add_attachments=add_attachments,
+            task_id=task_id,
             attachments=attachments,
             external_trace_id=external_trace_id,
             key_value_context=key_value_context,
-            metadata_patch=metadata_patch,
             recommendation=recommendation,
-            task_id=task_id,
             request_options=request_options,
         )
         return _response.data
 
-    def get_result(self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None) -> ElicitationResult:
+    def get_result(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Optional[ElicitationResult]:
         """
         200 with the provided fields once a human has answered; 204 while still pending.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ElicitationResult
+        typing.Optional[ElicitationResult]
             OK
 
         Examples
@@ -174,16 +167,14 @@ class AsyncElicitationsClient:
         self,
         *,
         idempotency_key: str,
-        fields: typing.Sequence[CreateElicitationRequestFieldsItem],
+        fields: typing.Sequence[Field],
         project_name: str,
         summary: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
-        attachments: typing.Optional[typing.Sequence[ObjectId]] = OMIT,
+        task_id: str,
+        attachments: typing.Optional[typing.Sequence[str]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         key_value_context: typing.Optional[typing.Dict[str, str]] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         recommendation: typing.Optional[typing.Sequence[FieldBid]] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
         """
@@ -194,28 +185,24 @@ class AsyncElicitationsClient:
         idempotency_key : str
             Idempotency key; duplicate submissions return the original event.
 
-        fields : typing.Sequence[CreateElicitationRequestFieldsItem]
+        fields : typing.Sequence[Field]
 
         project_name : str
 
         summary : str
             Human-readable summary of what's needed
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        attachments : typing.Optional[typing.Sequence[ObjectId]]
+        attachments : typing.Optional[typing.Sequence[str]]
             Upload ids of attached files to render for this request (must already be attached to the task)
 
         external_trace_id : typing.Optional[str]
 
         key_value_context : typing.Optional[typing.Dict[str, str]]
 
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
         recommendation : typing.Optional[typing.Sequence[FieldBid]]
-
-        task_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -229,7 +216,7 @@ class AsyncElicitationsClient:
         --------
         import asyncio
 
-        from pumpup import AsyncPumpUp, DateField
+        from pumpup import AsyncPumpUp, Field_DateField
 
         client = AsyncPumpUp(
             "0",
@@ -241,13 +228,15 @@ class AsyncElicitationsClient:
             await client.elicitations.create(
                 idempotency_key="Idempotency-Key",
                 fields=[
-                    DateField(
+                    Field_DateField(
                         id="id",
                         label="label",
+                        required=True,
                     )
                 ],
                 project_name="projectName",
                 summary="Need additional details on the incident",
+                task_id="taskId",
             )
 
 
@@ -258,33 +247,31 @@ class AsyncElicitationsClient:
             fields=fields,
             project_name=project_name,
             summary=summary,
-            add_attachments=add_attachments,
+            task_id=task_id,
             attachments=attachments,
             external_trace_id=external_trace_id,
             key_value_context=key_value_context,
-            metadata_patch=metadata_patch,
             recommendation=recommendation,
-            task_id=task_id,
             request_options=request_options,
         )
         return _response.data
 
     async def get_result(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ElicitationResult:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Optional[ElicitationResult]:
         """
         200 with the provided fields once a human has answered; 204 while still pending.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ElicitationResult
+        typing.Optional[ElicitationResult]
             OK
 
         Examples

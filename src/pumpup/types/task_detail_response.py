@@ -16,7 +16,7 @@ class TaskDetailResponse(UniversalBaseModel):
         FieldMetadata(alias="openRequests"),
         pydantic.Field(alias="openRequests"),
     ] = None
-    task: typing.Optional[TaskResponse] = None
+    task: TaskResponse
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

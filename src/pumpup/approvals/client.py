@@ -6,10 +6,7 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.approval_recommendation import ApprovalRecommendation
 from ..types.approval_result import ApprovalResult
-from ..types.attachment import Attachment
 from ..types.event_response import EventResponse
-from ..types.metadata_patch_dto import MetadataPatchDto
-from ..types.object_id import ObjectId
 from .raw_client import AsyncRawApprovalsClient, RawApprovalsClient
 
 # this is used as the default value for optional parameters
@@ -37,13 +34,11 @@ class ApprovalsClient:
         idempotency_key: str,
         project_name: str,
         summary: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
-        attachments: typing.Optional[typing.Sequence[ObjectId]] = OMIT,
+        task_id: str,
+        attachments: typing.Optional[typing.Sequence[str]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         key_value_context: typing.Optional[typing.Dict[str, str]] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         recommendation: typing.Optional[ApprovalRecommendation] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
         """
@@ -60,10 +55,10 @@ class ApprovalsClient:
         summary : str
             Human-readable summary of the action needing approval
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        attachments : typing.Optional[typing.Sequence[ObjectId]]
+        attachments : typing.Optional[typing.Sequence[str]]
             Upload ids of attached files to render for this request (must already be attached to the task)
 
         external_trace_id : typing.Optional[str]
@@ -72,12 +67,7 @@ class ApprovalsClient:
         key_value_context : typing.Optional[typing.Dict[str, str]]
             Display context as a plain key→value object (order/dup-keys are the client's concern)
 
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
         recommendation : typing.Optional[ApprovalRecommendation]
-
-        task_id : typing.Optional[str]
-            Target task; omit to use the project's singleton task
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -99,37 +89,38 @@ class ApprovalsClient:
             idempotency_key="Idempotency-Key",
             project_name="claims_refund_v1",
             summary="Refund $240 on claim C-1029",
+            task_id="taskId",
         )
         """
         _response = self._raw_client.create(
             idempotency_key=idempotency_key,
             project_name=project_name,
             summary=summary,
-            add_attachments=add_attachments,
+            task_id=task_id,
             attachments=attachments,
             external_trace_id=external_trace_id,
             key_value_context=key_value_context,
-            metadata_patch=metadata_patch,
             recommendation=recommendation,
-            task_id=task_id,
             request_options=request_options,
         )
         return _response.data
 
-    def get_result(self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None) -> ApprovalResult:
+    def get_result(
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Optional[ApprovalResult]:
         """
         200 with the outcome once a human has decided; 204 while still pending.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ApprovalResult
+        typing.Optional[ApprovalResult]
             OK
 
         Examples
@@ -169,13 +160,11 @@ class AsyncApprovalsClient:
         idempotency_key: str,
         project_name: str,
         summary: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
-        attachments: typing.Optional[typing.Sequence[ObjectId]] = OMIT,
+        task_id: str,
+        attachments: typing.Optional[typing.Sequence[str]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         key_value_context: typing.Optional[typing.Dict[str, str]] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         recommendation: typing.Optional[ApprovalRecommendation] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
         """
@@ -192,10 +181,10 @@ class AsyncApprovalsClient:
         summary : str
             Human-readable summary of the action needing approval
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        attachments : typing.Optional[typing.Sequence[ObjectId]]
+        attachments : typing.Optional[typing.Sequence[str]]
             Upload ids of attached files to render for this request (must already be attached to the task)
 
         external_trace_id : typing.Optional[str]
@@ -204,12 +193,7 @@ class AsyncApprovalsClient:
         key_value_context : typing.Optional[typing.Dict[str, str]]
             Display context as a plain key→value object (order/dup-keys are the client's concern)
 
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
         recommendation : typing.Optional[ApprovalRecommendation]
-
-        task_id : typing.Optional[str]
-            Target task; omit to use the project's singleton task
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -236,6 +220,7 @@ class AsyncApprovalsClient:
                 idempotency_key="Idempotency-Key",
                 project_name="claims_refund_v1",
                 summary="Refund $240 on claim C-1029",
+                task_id="taskId",
             )
 
 
@@ -245,33 +230,31 @@ class AsyncApprovalsClient:
             idempotency_key=idempotency_key,
             project_name=project_name,
             summary=summary,
-            add_attachments=add_attachments,
+            task_id=task_id,
             attachments=attachments,
             external_trace_id=external_trace_id,
             key_value_context=key_value_context,
-            metadata_patch=metadata_patch,
             recommendation=recommendation,
-            task_id=task_id,
             request_options=request_options,
         )
         return _response.data
 
     async def get_result(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ApprovalResult:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.Optional[ApprovalResult]:
         """
         200 with the outcome once a human has decided; 204 while still pending.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ApprovalResult
+        typing.Optional[ApprovalResult]
             OK
 
         Examples

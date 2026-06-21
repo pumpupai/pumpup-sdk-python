@@ -6,22 +6,18 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
-from .steps import Steps
+from .document import Document
 
 
-class ProjectResponse(UniversalBaseModel):
-    id: str
-    name: str = pydantic.Field()
-    """
-    Human-readable display name
-    """
-
-    project_name: typing_extensions.Annotated[
-        str,
-        FieldMetadata(alias="projectName"),
-        pydantic.Field(alias="projectName", description="The slug — reference the project by this on ingest"),
-    ]
-    steps: Steps
+class MetadataPatch(UniversalBaseModel):
+    empty: typing.Optional[bool] = None
+    set_: typing_extensions.Annotated[
+        typing.Optional[Document], FieldMetadata(alias="set"), pydantic.Field(alias="set")
+    ] = None
+    set_once: typing_extensions.Annotated[
+        typing.Optional[Document], FieldMetadata(alias="setOnce"), pydantic.Field(alias="setOnce")
+    ] = None
+    unset: typing.Optional[typing.List[str]] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

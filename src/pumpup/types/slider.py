@@ -10,9 +10,9 @@ class Slider(UniversalBaseModel):
     description: typing.Optional[str] = None
     id: str
     label: str
-    max: typing.Optional[float] = None
-    min: typing.Optional[float] = None
-    required: typing.Optional[bool] = None
+    max: float
+    min: float
+    required: bool
     step: typing.Optional[float] = None
 
     if IS_PYDANTIC_V2:

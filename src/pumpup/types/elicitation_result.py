@@ -11,18 +11,14 @@ from ..core.serialization import FieldMetadata
 
 class ElicitationResult(UniversalBaseModel):
     answered_at: typing_extensions.Annotated[
-        typing.Optional[dt.datetime], FieldMetadata(alias="answeredAt"), pydantic.Field(alias="answeredAt")
-    ] = None
+        dt.datetime, FieldMetadata(alias="answeredAt"), pydantic.Field(alias="answeredAt")
+    ]
     answered_by: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="answeredBy"), pydantic.Field(alias="answeredBy")
     ] = None
     fields: typing.Optional[typing.Dict[str, typing.Any]] = None
-    request_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="requestId"), pydantic.Field(alias="requestId")
-    ] = None
-    task_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="taskId"), pydantic.Field(alias="taskId")
-    ] = None
+    request_id: typing_extensions.Annotated[str, FieldMetadata(alias="requestId"), pydantic.Field(alias="requestId")]
+    task_id: typing_extensions.Annotated[str, FieldMetadata(alias="taskId"), pydantic.Field(alias="taskId")]
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

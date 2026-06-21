@@ -5,20 +5,10 @@ dynamic = ["version"]
 [tool.poetry]
 name = "pumpup-sdk"
 version = "0.0.1"
-description = "Official SDK for the Pump Up agent API — human-in-the-loop approvals, elicitations, and routing for AI agents."
+description = ""
 readme = "README.md"
-authors = [
-    "Pump Up <dev@pumpup.com>"
-]
-keywords = [
-    "hitl",
-    "human-in-the-loop",
-    "ai-agents",
-    "agents",
-    "approvals",
-    "llm",
-    "sdk"
-]
+authors = []
+keywords = []
 license = "MIT"
 classifiers = [
     "Intended Audience :: Developers",
@@ -44,8 +34,6 @@ packages = [
 ]
 
 [tool.poetry.urls]
-Documentation = 'https://docs.pumpup.com'
-Homepage = 'https://pumpup.com'
 Repository = 'https://github.com/pumpupai/pumpup-sdk-python'
 
 [tool.poetry.dependencies]

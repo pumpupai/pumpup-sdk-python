@@ -12,16 +12,17 @@ from .task_response_status import TaskResponseStatus
 
 class TaskResponse(UniversalBaseModel):
     attachments: typing.Optional[typing.List[Attachment]] = None
-    current_state: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="currentState"), pydantic.Field(alias="currentState")
+    current_step: typing_extensions.Annotated[
+        str, FieldMetadata(alias="currentStep"), pydantic.Field(alias="currentStep")
+    ]
+    external_id: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="externalId"), pydantic.Field(alias="externalId")
     ] = None
-    id: typing.Optional[str] = None
+    id: str
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None
-    name: typing.Optional[str] = None
-    project_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="projectId"), pydantic.Field(alias="projectId")
-    ] = None
-    status: typing.Optional[TaskResponseStatus] = None
+    name: str
+    project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId"), pydantic.Field(alias="projectId")]
+    status: TaskResponseStatus
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

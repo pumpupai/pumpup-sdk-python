@@ -10,7 +10,7 @@ class Switch(UniversalBaseModel):
     description: typing.Optional[str] = None
     id: str
     label: str
-    required: typing.Optional[bool] = None
+    required: bool
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -3,11 +3,15 @@
 import typing
 
 import pydantic
+import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.serialization import FieldMetadata
 
 
-class ErrorResponse(UniversalBaseModel):
-    error: str
+class TaskClosed(UniversalBaseModel):
+    terminal_state: typing_extensions.Annotated[
+        str, FieldMetadata(alias="terminalState"), pydantic.Field(alias="terminalState")
+    ]
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

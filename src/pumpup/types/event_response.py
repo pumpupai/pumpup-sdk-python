@@ -9,9 +9,7 @@ from ..core.serialization import FieldMetadata
 
 
 class EventResponse(UniversalBaseModel):
-    event_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="eventId"), pydantic.Field(alias="eventId")
-    ] = None
+    event_id: typing_extensions.Annotated[str, FieldMetadata(alias="eventId"), pydantic.Field(alias="eventId")]
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

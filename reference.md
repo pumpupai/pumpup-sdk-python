@@ -26,6 +26,7 @@ client.events.agent_action(
     idempotency_key="Idempotency-Key",
     description="Auto-classified claim as low-risk",
     project_name="projectName",
+    task_id="taskId",
 )
 
 ```
@@ -66,6 +67,14 @@ client.events.agent_action(
 <dl>
 <dd>
 
+**task_id:** `str` — Target task — create one via POST /tasks first
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **add_attachments:** `typing.Optional[typing.List[Attachment]]` — Files to attach to the task — upload id + display name (each id from POST /uploads)
     
 </dd>
@@ -91,14 +100,6 @@ client.events.agent_action(
 <dd>
 
 **metadata_patch:** `typing.Optional[MetadataPatchDto]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**task_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -152,6 +153,7 @@ client.events.exception(
     idempotency_key="Idempotency-Key",
     message="OCR failed on uploaded document",
     project_name="projectName",
+    task_id="taskId",
 )
 
 ```
@@ -192,7 +194,7 @@ client.events.exception(
 <dl>
 <dd>
 
-**add_attachments:** `typing.Optional[typing.List[Attachment]]` — Files to attach to the task — upload id + display name (each id from POST /uploads)
+**task_id:** `str` — Target task — create one via POST /tasks first
     
 </dd>
 </dl>
@@ -209,22 +211,6 @@ client.events.exception(
 <dd>
 
 **external_trace_id:** `typing.Optional[str]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata_patch:** `typing.Optional[MetadataPatchDto]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**task_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -278,6 +264,7 @@ client.events.note(
     idempotency_key="Idempotency-Key",
     message="Customer called to confirm bank details",
     project_name="projectName",
+    task_id="taskId",
 )
 
 ```
@@ -318,7 +305,7 @@ client.events.note(
 <dl>
 <dd>
 
-**external_trace_id:** `typing.Optional[str]` 
+**task_id:** `str` — Target task — create one via POST /tasks first
     
 </dd>
 </dl>
@@ -326,7 +313,7 @@ client.events.note(
 <dl>
 <dd>
 
-**task_id:** `typing.Optional[str]` 
+**external_trace_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -387,6 +374,7 @@ client.approvals.create(
     idempotency_key="Idempotency-Key",
     project_name="claims_refund_v1",
     summary="Refund $240 on claim C-1029",
+    task_id="taskId",
 )
 
 ```
@@ -427,7 +415,7 @@ client.approvals.create(
 <dl>
 <dd>
 
-**add_attachments:** `typing.Optional[typing.List[Attachment]]` — Files to attach to the task — upload id + display name (each id from POST /uploads)
+**task_id:** `str` — Target task — create one via POST /tasks first
     
 </dd>
 </dl>
@@ -435,7 +423,7 @@ client.approvals.create(
 <dl>
 <dd>
 
-**attachments:** `typing.Optional[typing.List[ObjectId]]` — Upload ids of attached files to render for this request (must already be attached to the task)
+**attachments:** `typing.Optional[typing.List[str]]` — Upload ids of attached files to render for this request (must already be attached to the task)
     
 </dd>
 </dl>
@@ -459,23 +447,7 @@ client.approvals.create(
 <dl>
 <dd>
 
-**metadata_patch:** `typing.Optional[MetadataPatchDto]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **recommendation:** `typing.Optional[ApprovalRecommendation]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**task_id:** `typing.Optional[str]` — Target task; omit to use the project's singleton task
     
 </dd>
 </dl>
@@ -495,7 +467,7 @@ client.approvals.create(
 </dl>
 </details>
 
-<details><summary><code>client.approvals.<a href="src/pumpup/approvals/client.py">get_result</a>(...) -> ApprovalResult</code></summary>
+<details><summary><code>client.approvals.<a href="src/pumpup/approvals/client.py">get_result</a>(...) -> typing.Optional[ApprovalResult]</code></summary>
 <dl>
 <dd>
 
@@ -522,7 +494,7 @@ client.approvals.create(
 <dd>
 
 ```python
-from pumpup import PumpUp, ObjectId
+from pumpup import PumpUp
 from pumpup.environment import PumpUpEnvironment
 
 client = PumpUp(
@@ -532,7 +504,7 @@ client = PumpUp(
 )
 
 client.approvals.get_result(
-    id=ObjectId(),
+    id="id",
 )
 
 ```
@@ -549,7 +521,7 @@ client.approvals.get_result(
 <dl>
 <dd>
 
-**id:** `ObjectId` 
+**id:** `str` 
     
 </dd>
 </dl>
@@ -597,7 +569,7 @@ Returns immediately with an event_id; poll the result endpoint by it for the ans
 <dd>
 
 ```python
-from pumpup import PumpUp, DateField
+from pumpup import PumpUp, Field_DateField
 from pumpup.environment import PumpUpEnvironment
 
 client = PumpUp(
@@ -609,13 +581,15 @@ client = PumpUp(
 client.elicitations.create(
     idempotency_key="Idempotency-Key",
     fields=[
-        DateField(
+        Field_DateField(
             id="id",
             label="label",
+            required=True,
         )
     ],
     project_name="projectName",
     summary="Need additional details on the incident",
+    task_id="taskId",
 )
 
 ```
@@ -640,7 +614,7 @@ client.elicitations.create(
 <dl>
 <dd>
 
-**fields:** `typing.List[CreateElicitationRequestFieldsItem]` 
+**fields:** `typing.List[Field]` 
     
 </dd>
 </dl>
@@ -664,7 +638,7 @@ client.elicitations.create(
 <dl>
 <dd>
 
-**add_attachments:** `typing.Optional[typing.List[Attachment]]` — Files to attach to the task — upload id + display name (each id from POST /uploads)
+**task_id:** `str` — Target task — create one via POST /tasks first
     
 </dd>
 </dl>
@@ -672,7 +646,7 @@ client.elicitations.create(
 <dl>
 <dd>
 
-**attachments:** `typing.Optional[typing.List[ObjectId]]` — Upload ids of attached files to render for this request (must already be attached to the task)
+**attachments:** `typing.Optional[typing.List[str]]` — Upload ids of attached files to render for this request (must already be attached to the task)
     
 </dd>
 </dl>
@@ -696,23 +670,7 @@ client.elicitations.create(
 <dl>
 <dd>
 
-**metadata_patch:** `typing.Optional[MetadataPatchDto]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **recommendation:** `typing.Optional[typing.List[FieldBid]]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**task_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -732,7 +690,7 @@ client.elicitations.create(
 </dl>
 </details>
 
-<details><summary><code>client.elicitations.<a href="src/pumpup/elicitations/client.py">get_result</a>(...) -> ElicitationResult</code></summary>
+<details><summary><code>client.elicitations.<a href="src/pumpup/elicitations/client.py">get_result</a>(...) -> typing.Optional[ElicitationResult]</code></summary>
 <dl>
 <dd>
 
@@ -759,7 +717,7 @@ client.elicitations.create(
 <dd>
 
 ```python
-from pumpup import PumpUp, ObjectId
+from pumpup import PumpUp
 from pumpup.environment import PumpUpEnvironment
 
 client = PumpUp(
@@ -769,7 +727,7 @@ client = PumpUp(
 )
 
 client.elicitations.get_result(
-    id=ObjectId(),
+    id="id",
 )
 
 ```
@@ -786,7 +744,7 @@ client.elicitations.get_result(
 <dl>
 <dd>
 
-**id:** `ObjectId` 
+**id:** `str` 
     
 </dd>
 </dl>
@@ -906,7 +864,7 @@ Includes the declared step graph.
 <dd>
 
 ```python
-from pumpup import PumpUp, ObjectId
+from pumpup import PumpUp
 from pumpup.environment import PumpUpEnvironment
 
 client = PumpUp(
@@ -916,7 +874,7 @@ client = PumpUp(
 )
 
 client.projects.get(
-    id=ObjectId(),
+    id="id",
 )
 
 ```
@@ -933,7 +891,7 @@ client.projects.get(
 <dl>
 <dd>
 
-**id:** `ObjectId` 
+**id:** `str` 
     
 </dd>
 </dl>
@@ -1006,7 +964,7 @@ client.tasks.list()
 <dl>
 <dd>
 
-**project_id:** `typing.Optional[ObjectId]` 
+**project_id:** `typing.Optional[str]` 
     
 </dd>
 </dl>
@@ -1114,6 +1072,14 @@ client.tasks.create(
 <dl>
 <dd>
 
+**external_id:** `typing.Optional[str]` — Optional client correlation id (e.g. agent session/run); bookkeeping only — not unique
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **metadata_patch:** `typing.Optional[MetadataPatchDto]` 
     
 </dd>
@@ -1161,7 +1127,7 @@ Materialized state — name, current state, metadata, attachments — plus open 
 <dd>
 
 ```python
-from pumpup import PumpUp, ObjectId
+from pumpup import PumpUp
 from pumpup.environment import PumpUpEnvironment
 
 client = PumpUp(
@@ -1171,7 +1137,7 @@ client = PumpUp(
 )
 
 client.tasks.get(
-    id=ObjectId(),
+    id="id",
 )
 
 ```
@@ -1188,7 +1154,97 @@ client.tasks.get(
 <dl>
 <dd>
 
-**id:** `ObjectId` 
+**id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.tasks.<a href="src/pumpup/tasks/client.py">events</a>(...) -> TaskEventsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Ascending cursor tail over the task's event log; pass nextCursor back as ?cursor= to resume. An absent cursor starts at the first event.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from pumpup import PumpUp
+from pumpup.environment import PumpUpEnvironment
+
+client = PumpUp(
+    api_key="<token>",
+    version="<X-API-Version>",
+    environment=PumpUpEnvironment.DEFAULT,
+)
+
+client.tasks.events(
+    id="id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `str` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` 
     
 </dd>
 </dl>
@@ -1282,7 +1338,7 @@ client.uploads.upload(
 <dd>
 
 ```python
-from pumpup import PumpUp, ObjectId
+from pumpup import PumpUp
 from pumpup.environment import PumpUpEnvironment
 
 client = PumpUp(
@@ -1292,7 +1348,7 @@ client = PumpUp(
 )
 
 client.uploads.get(
-    id=ObjectId(),
+    id="id",
 )
 
 ```
@@ -1309,7 +1365,7 @@ client.uploads.get(
 <dl>
 <dd>
 
-**id:** `ObjectId` 
+**id:** `str` 
     
 </dd>
 </dl>

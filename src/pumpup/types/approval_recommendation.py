@@ -9,7 +9,7 @@ from .outcome import Outcome
 
 class ApprovalRecommendation(UniversalBaseModel):
     confidence: typing.Optional[float] = None
-    outcome: typing.Optional[Outcome] = None
+    outcome: Outcome
     rationale: typing.Optional[str] = None
 
     if IS_PYDANTIC_V2:

@@ -6,16 +6,16 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .document import Document
 from .step import Step
-from .steps_state_schemas import StepsStateSchemas
 
 
 class Steps(UniversalBaseModel):
-    initial_state: typing_extensions.Annotated[
-        str, FieldMetadata(alias="initialState"), pydantic.Field(alias="initialState")
+    initial_step: typing_extensions.Annotated[
+        str, FieldMetadata(alias="initialStep"), pydantic.Field(alias="initialStep")
     ]
-    state_schemas: typing_extensions.Annotated[
-        typing.Optional[StepsStateSchemas], FieldMetadata(alias="stateSchemas"), pydantic.Field(alias="stateSchemas")
+    step_schemas: typing_extensions.Annotated[
+        typing.Optional[Document], FieldMetadata(alias="stepSchemas"), pydantic.Field(alias="stepSchemas")
     ] = None
     steps: typing.List[Step]
 

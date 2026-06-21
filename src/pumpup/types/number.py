@@ -12,12 +12,12 @@ class Number(UniversalBaseModel):
     description: typing.Optional[str] = None
     id: str
     integer_only: typing_extensions.Annotated[
-        typing.Optional[bool], FieldMetadata(alias="integerOnly"), pydantic.Field(alias="integerOnly")
-    ] = None
+        bool, FieldMetadata(alias="integerOnly"), pydantic.Field(alias="integerOnly")
+    ]
     label: str
     max: typing.Optional[float] = None
     min: typing.Optional[float] = None
-    required: typing.Optional[bool] = None
+    required: bool
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

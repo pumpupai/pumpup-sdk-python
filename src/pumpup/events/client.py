@@ -34,11 +34,11 @@ class EventsClient:
         idempotency_key: str,
         description: str,
         project_name: str,
+        task_id: str,
         add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
         detail: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         transitions_to: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
@@ -53,6 +53,9 @@ class EventsClient:
 
         project_name : str
 
+        task_id : str
+            Target task — create one via POST /tasks first
+
         add_attachments : typing.Optional[typing.Sequence[Attachment]]
             Files to attach to the task — upload id + display name (each id from POST /uploads)
 
@@ -61,8 +64,6 @@ class EventsClient:
         external_trace_id : typing.Optional[str]
 
         metadata_patch : typing.Optional[MetadataPatchDto]
-
-        task_id : typing.Optional[str]
 
         transitions_to : typing.Optional[str]
             State to transition the task into; must be a declared transition
@@ -87,17 +88,18 @@ class EventsClient:
             idempotency_key="Idempotency-Key",
             description="Auto-classified claim as low-risk",
             project_name="projectName",
+            task_id="taskId",
         )
         """
         _response = self._raw_client.agent_action(
             idempotency_key=idempotency_key,
             description=description,
             project_name=project_name,
+            task_id=task_id,
             add_attachments=add_attachments,
             detail=detail,
             external_trace_id=external_trace_id,
             metadata_patch=metadata_patch,
-            task_id=task_id,
             transitions_to=transitions_to,
             request_options=request_options,
         )
@@ -109,11 +111,9 @@ class EventsClient:
         idempotency_key: str,
         message: str,
         project_name: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
+        task_id: str,
         detail: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         transitions_to: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
@@ -128,16 +128,12 @@ class EventsClient:
 
         project_name : str
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
         detail : typing.Optional[typing.Dict[str, typing.Any]]
 
         external_trace_id : typing.Optional[str]
-
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
-        task_id : typing.Optional[str]
 
         transitions_to : typing.Optional[str]
 
@@ -161,17 +157,16 @@ class EventsClient:
             idempotency_key="Idempotency-Key",
             message="OCR failed on uploaded document",
             project_name="projectName",
+            task_id="taskId",
         )
         """
         _response = self._raw_client.exception(
             idempotency_key=idempotency_key,
             message=message,
             project_name=project_name,
-            add_attachments=add_attachments,
+            task_id=task_id,
             detail=detail,
             external_trace_id=external_trace_id,
-            metadata_patch=metadata_patch,
-            task_id=task_id,
             transitions_to=transitions_to,
             request_options=request_options,
         )
@@ -183,8 +178,8 @@ class EventsClient:
         idempotency_key: str,
         message: str,
         project_name: str,
+        task_id: str,
         external_trace_id: typing.Optional[str] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
         """
@@ -198,9 +193,10 @@ class EventsClient:
 
         project_name : str
 
-        external_trace_id : typing.Optional[str]
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        task_id : typing.Optional[str]
+        external_trace_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -222,14 +218,15 @@ class EventsClient:
             idempotency_key="Idempotency-Key",
             message="Customer called to confirm bank details",
             project_name="projectName",
+            task_id="taskId",
         )
         """
         _response = self._raw_client.note(
             idempotency_key=idempotency_key,
             message=message,
             project_name=project_name,
-            external_trace_id=external_trace_id,
             task_id=task_id,
+            external_trace_id=external_trace_id,
             request_options=request_options,
         )
         return _response.data
@@ -256,11 +253,11 @@ class AsyncEventsClient:
         idempotency_key: str,
         description: str,
         project_name: str,
+        task_id: str,
         add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
         detail: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         transitions_to: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
@@ -275,6 +272,9 @@ class AsyncEventsClient:
 
         project_name : str
 
+        task_id : str
+            Target task — create one via POST /tasks first
+
         add_attachments : typing.Optional[typing.Sequence[Attachment]]
             Files to attach to the task — upload id + display name (each id from POST /uploads)
 
@@ -283,8 +283,6 @@ class AsyncEventsClient:
         external_trace_id : typing.Optional[str]
 
         metadata_patch : typing.Optional[MetadataPatchDto]
-
-        task_id : typing.Optional[str]
 
         transitions_to : typing.Optional[str]
             State to transition the task into; must be a declared transition
@@ -314,6 +312,7 @@ class AsyncEventsClient:
                 idempotency_key="Idempotency-Key",
                 description="Auto-classified claim as low-risk",
                 project_name="projectName",
+                task_id="taskId",
             )
 
 
@@ -323,11 +322,11 @@ class AsyncEventsClient:
             idempotency_key=idempotency_key,
             description=description,
             project_name=project_name,
+            task_id=task_id,
             add_attachments=add_attachments,
             detail=detail,
             external_trace_id=external_trace_id,
             metadata_patch=metadata_patch,
-            task_id=task_id,
             transitions_to=transitions_to,
             request_options=request_options,
         )
@@ -339,11 +338,9 @@ class AsyncEventsClient:
         idempotency_key: str,
         message: str,
         project_name: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
+        task_id: str,
         detail: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         transitions_to: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
@@ -358,16 +355,12 @@ class AsyncEventsClient:
 
         project_name : str
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
         detail : typing.Optional[typing.Dict[str, typing.Any]]
 
         external_trace_id : typing.Optional[str]
-
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
-        task_id : typing.Optional[str]
 
         transitions_to : typing.Optional[str]
 
@@ -396,6 +389,7 @@ class AsyncEventsClient:
                 idempotency_key="Idempotency-Key",
                 message="OCR failed on uploaded document",
                 project_name="projectName",
+                task_id="taskId",
             )
 
 
@@ -405,11 +399,9 @@ class AsyncEventsClient:
             idempotency_key=idempotency_key,
             message=message,
             project_name=project_name,
-            add_attachments=add_attachments,
+            task_id=task_id,
             detail=detail,
             external_trace_id=external_trace_id,
-            metadata_patch=metadata_patch,
-            task_id=task_id,
             transitions_to=transitions_to,
             request_options=request_options,
         )
@@ -421,8 +413,8 @@ class AsyncEventsClient:
         idempotency_key: str,
         message: str,
         project_name: str,
+        task_id: str,
         external_trace_id: typing.Optional[str] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EventResponse:
         """
@@ -436,9 +428,10 @@ class AsyncEventsClient:
 
         project_name : str
 
-        external_trace_id : typing.Optional[str]
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        task_id : typing.Optional[str]
+        external_trace_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -465,6 +458,7 @@ class AsyncEventsClient:
                 idempotency_key="Idempotency-Key",
                 message="Customer called to confirm bank details",
                 project_name="projectName",
+                task_id="taskId",
             )
 
 
@@ -474,8 +468,8 @@ class AsyncEventsClient:
             idempotency_key=idempotency_key,
             message=message,
             project_name=project_name,
-            external_trace_id=external_trace_id,
             task_id=task_id,
+            external_trace_id=external_trace_id,
             request_options=request_options,
         )
         return _response.data

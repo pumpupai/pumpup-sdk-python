@@ -12,7 +12,7 @@ class Time(UniversalBaseModel):
     label: str
     max: typing.Optional[str] = None
     min: typing.Optional[str] = None
-    required: typing.Optional[bool] = None
+    required: bool
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

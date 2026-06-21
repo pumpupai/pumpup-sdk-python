@@ -19,23 +19,19 @@ class ApprovalResult(UniversalBaseModel):
         pydantic.Field(alias="authoritySnapshot"),
     ] = None
     decided_at: typing_extensions.Annotated[
-        typing.Optional[dt.datetime], FieldMetadata(alias="decidedAt"), pydantic.Field(alias="decidedAt")
-    ] = None
+        dt.datetime, FieldMetadata(alias="decidedAt"), pydantic.Field(alias="decidedAt")
+    ]
     decided_by: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="decidedBy"), pydantic.Field(alias="decidedBy")
     ] = None
-    outcome: typing.Optional[Outcome] = None
+    outcome: Outcome
     recommendation_snapshot: typing_extensions.Annotated[
         typing.Optional[ApprovalRecommendation],
         FieldMetadata(alias="recommendationSnapshot"),
         pydantic.Field(alias="recommendationSnapshot"),
     ] = None
-    request_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="requestId"), pydantic.Field(alias="requestId")
-    ] = None
-    task_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="taskId"), pydantic.Field(alias="taskId")
-    ] = None
+    request_id: typing_extensions.Annotated[str, FieldMetadata(alias="requestId"), pydantic.Field(alias="requestId")]
+    task_id: typing_extensions.Annotated[str, FieldMetadata(alias="taskId"), pydantic.Field(alias="taskId")]
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

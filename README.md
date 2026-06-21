@@ -51,6 +51,7 @@ client.events.agent_action(
     idempotency_key="Idempotency-Key",
     description="Auto-classified claim as low-risk",
     project_name="projectName",
+    task_id="taskId",
 )
 ```
 
@@ -87,6 +88,7 @@ async def main() -> None:
         idempotency_key="Idempotency-Key",
         description="Auto-classified claim as low-risk",
         project_name="projectName",
+        task_id="taskId",
     )
 
 

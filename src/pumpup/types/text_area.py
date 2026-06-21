@@ -18,7 +18,7 @@ class TextArea(UniversalBaseModel):
     min_length: typing_extensions.Annotated[
         typing.Optional[int], FieldMetadata(alias="minLength"), pydantic.Field(alias="minLength")
     ] = None
-    required: typing.Optional[bool] = None
+    required: bool
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

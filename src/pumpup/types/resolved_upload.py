@@ -6,16 +6,15 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
-from .object_id import ObjectId
 
 
 class ResolvedUpload(UniversalBaseModel):
     content_type: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="contentType"), pydantic.Field(alias="contentType")
-    ] = None
-    id: typing.Optional[ObjectId] = None
-    size: typing.Optional[int] = None
-    url: typing.Optional[str] = None
+        str, FieldMetadata(alias="contentType"), pydantic.Field(alias="contentType")
+    ]
+    id: str
+    size: int
+    url: str
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

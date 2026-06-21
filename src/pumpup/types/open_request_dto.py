@@ -12,15 +12,13 @@ from .open_request_dto_event_type import OpenRequestDtoEventType
 
 class OpenRequestDto(UniversalBaseModel):
     event_type: typing_extensions.Annotated[
-        typing.Optional[OpenRequestDtoEventType], FieldMetadata(alias="eventType"), pydantic.Field(alias="eventType")
-    ] = None
-    request_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="requestId"), pydantic.Field(alias="requestId")
-    ] = None
+        OpenRequestDtoEventType, FieldMetadata(alias="eventType"), pydantic.Field(alias="eventType")
+    ]
+    request_id: typing_extensions.Annotated[str, FieldMetadata(alias="requestId"), pydantic.Field(alias="requestId")]
     requested_at: typing_extensions.Annotated[
-        typing.Optional[dt.datetime], FieldMetadata(alias="requestedAt"), pydantic.Field(alias="requestedAt")
-    ] = None
-    summary: typing.Optional[str] = None
+        dt.datetime, FieldMetadata(alias="requestedAt"), pydantic.Field(alias="requestedAt")
+    ]
+    summary: str
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

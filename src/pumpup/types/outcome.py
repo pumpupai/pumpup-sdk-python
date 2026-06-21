@@ -14,7 +14,7 @@ class Outcome(UniversalBaseModel):
     reason_code: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="reasonCode"), pydantic.Field(alias="reasonCode")
     ] = None
-    type: typing.Optional[OutcomeType] = None
+    type: OutcomeType
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

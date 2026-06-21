@@ -6,22 +6,19 @@ import pydantic
 import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
-from .steps import Steps
+from .approval_recommendation import ApprovalRecommendation
+from .authority_snapshot import AuthoritySnapshot
+from .outcome import Outcome
 
 
-class ProjectResponse(UniversalBaseModel):
-    id: str
-    name: str = pydantic.Field()
-    """
-    Human-readable display name
-    """
-
-    project_name: typing_extensions.Annotated[
-        str,
-        FieldMetadata(alias="projectName"),
-        pydantic.Field(alias="projectName", description="The slug — reference the project by this on ingest"),
-    ]
-    steps: Steps
+class ApprovalDecided(UniversalBaseModel):
+    authority: typing.Optional[AuthoritySnapshot] = None
+    outcome: Outcome
+    recommendation_snapshot: typing_extensions.Annotated[
+        typing.Optional[ApprovalRecommendation],
+        FieldMetadata(alias="recommendationSnapshot"),
+        pydantic.Field(alias="recommendationSnapshot"),
+    ] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

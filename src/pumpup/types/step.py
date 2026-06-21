@@ -9,8 +9,8 @@ from .step_owner import StepOwner
 
 class Step(UniversalBaseModel):
     exits: typing.Optional[typing.List[str]] = None
-    name: typing.Optional[str] = None
-    owner: typing.Optional[StepOwner] = None
+    name: str
+    owner: StepOwner
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

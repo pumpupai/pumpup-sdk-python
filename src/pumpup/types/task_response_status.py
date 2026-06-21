@@ -2,4 +2,4 @@
 
 import typing
 
-TaskResponseStatus = typing.Union[typing.Literal["OPEN", "CLOSED"], typing.Any]
+TaskResponseStatus = typing.Union[typing.Literal["RUNNING", "WAITING", "CLOSED"], typing.Any]
