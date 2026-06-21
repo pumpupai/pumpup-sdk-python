@@ -5,7 +5,7 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
@@ -14,17 +14,10 @@ class ElicitationResult(UniversalBaseModel):
         dt.datetime, FieldMetadata(alias="answeredAt"), pydantic.Field(alias="answeredAt")
     ]
     answered_by: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="answeredBy"), pydantic.Field(alias="answeredBy")
-    ] = None
+        typing.Optional[str], FieldMetadata(alias="answeredBy"), pydantic.Field(alias="answeredBy", default=None)
+    ]
     fields: typing.Optional[typing.Dict[str, typing.Any]] = None
     request_id: typing_extensions.Annotated[str, FieldMetadata(alias="requestId"), pydantic.Field(alias="requestId")]
     task_id: typing_extensions.Annotated[str, FieldMetadata(alias="taskId"), pydantic.Field(alias="taskId")]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)

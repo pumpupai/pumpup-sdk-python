@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .document import Document
 from .step import Step
@@ -15,15 +15,8 @@ class Steps(UniversalBaseModel):
         str, FieldMetadata(alias="initialStep"), pydantic.Field(alias="initialStep")
     ]
     step_schemas: typing_extensions.Annotated[
-        typing.Optional[Document], FieldMetadata(alias="stepSchemas"), pydantic.Field(alias="stepSchemas")
-    ] = None
+        typing.Optional[Document], FieldMetadata(alias="stepSchemas"), pydantic.Field(alias="stepSchemas", default=None)
+    ]
     steps: typing.List[Step]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)

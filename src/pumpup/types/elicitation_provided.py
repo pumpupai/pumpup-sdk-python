@@ -4,21 +4,14 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
 class ElicitationProvided(UniversalBaseModel):
     answered_by: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="answeredBy"), pydantic.Field(alias="answeredBy")
-    ] = None
+        typing.Optional[str], FieldMetadata(alias="answeredBy"), pydantic.Field(alias="answeredBy", default=None)
+    ]
     answers: typing.Optional[typing.Dict[str, typing.Any]] = None
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)

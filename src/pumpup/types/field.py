@@ -7,7 +7,7 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .text_format import TextFormat
 
@@ -21,14 +21,7 @@ class Field_DateField(UniversalBaseModel):
     min: typing.Optional[dt.date] = None
     required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Field_DateTime(UniversalBaseModel):
@@ -40,14 +33,7 @@ class Field_DateTime(UniversalBaseModel):
     min: typing.Optional[dt.datetime] = None
     required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Field_Multiselect(UniversalBaseModel):
@@ -58,14 +44,7 @@ class Field_Multiselect(UniversalBaseModel):
     options: typing.List[str]
     required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Field_Number(UniversalBaseModel):
@@ -80,14 +59,7 @@ class Field_Number(UniversalBaseModel):
     min: typing.Optional[float] = None
     required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Field_Select(UniversalBaseModel):
@@ -98,14 +70,7 @@ class Field_Select(UniversalBaseModel):
     options: typing.List[str]
     required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Field_Slider(UniversalBaseModel):
@@ -118,14 +83,7 @@ class Field_Slider(UniversalBaseModel):
     required: bool
     step: typing.Optional[float] = None
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Field_Switch(UniversalBaseModel):
@@ -135,14 +93,7 @@ class Field_Switch(UniversalBaseModel):
     label: str
     required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Field_Text(UniversalBaseModel):
@@ -152,21 +103,14 @@ class Field_Text(UniversalBaseModel):
     id: str
     label: str
     max_length: typing_extensions.Annotated[
-        typing.Optional[int], FieldMetadata(alias="maxLength"), pydantic.Field(alias="maxLength")
-    ] = None
+        typing.Optional[int], FieldMetadata(alias="maxLength"), pydantic.Field(alias="maxLength", default=None)
+    ]
     min_length: typing_extensions.Annotated[
-        typing.Optional[int], FieldMetadata(alias="minLength"), pydantic.Field(alias="minLength")
-    ] = None
+        typing.Optional[int], FieldMetadata(alias="minLength"), pydantic.Field(alias="minLength", default=None)
+    ]
     required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Field_TextArea(UniversalBaseModel):
@@ -175,21 +119,14 @@ class Field_TextArea(UniversalBaseModel):
     id: str
     label: str
     max_length: typing_extensions.Annotated[
-        typing.Optional[int], FieldMetadata(alias="maxLength"), pydantic.Field(alias="maxLength")
-    ] = None
+        typing.Optional[int], FieldMetadata(alias="maxLength"), pydantic.Field(alias="maxLength", default=None)
+    ]
     min_length: typing_extensions.Annotated[
-        typing.Optional[int], FieldMetadata(alias="minLength"), pydantic.Field(alias="minLength")
-    ] = None
+        typing.Optional[int], FieldMetadata(alias="minLength"), pydantic.Field(alias="minLength", default=None)
+    ]
     required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Field_Time(UniversalBaseModel):
@@ -201,14 +138,7 @@ class Field_Time(UniversalBaseModel):
     min: typing.Optional[str] = None
     required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 Field = typing_extensions.Annotated[

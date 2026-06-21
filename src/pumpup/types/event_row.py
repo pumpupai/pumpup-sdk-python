@@ -5,7 +5,7 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .event_row_event_type import EventRowEventType
 from .event_row_owner import EventRowOwner
@@ -18,12 +18,14 @@ class EventRow(UniversalBaseModel):
         EventRowEventType, FieldMetadata(alias="eventType"), pydantic.Field(alias="eventType")
     ]
     external_trace_id: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="externalTraceId"), pydantic.Field(alias="externalTraceId")
-    ] = None
+        typing.Optional[str],
+        FieldMetadata(alias="externalTraceId"),
+        pydantic.Field(alias="externalTraceId", default=None),
+    ]
     id: str
     in_response_to: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="inResponseTo"), pydantic.Field(alias="inResponseTo")
-    ] = None
+        typing.Optional[str], FieldMetadata(alias="inResponseTo"), pydantic.Field(alias="inResponseTo", default=None)
+    ]
     owner: EventRowOwner
     payload: Payload
     project_id: typing_extensions.Annotated[str, FieldMetadata(alias="projectId"), pydantic.Field(alias="projectId")]
@@ -31,17 +33,12 @@ class EventRow(UniversalBaseModel):
     task_id: typing_extensions.Annotated[str, FieldMetadata(alias="taskId"), pydantic.Field(alias="taskId")]
     timestamp: dt.datetime
     transition_from: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="transitionFrom"), pydantic.Field(alias="transitionFrom")
-    ] = None
+        typing.Optional[str],
+        FieldMetadata(alias="transitionFrom"),
+        pydantic.Field(alias="transitionFrom", default=None),
+    ]
     transition_to: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="transitionTo"), pydantic.Field(alias="transitionTo")
-    ] = None
+        typing.Optional[str], FieldMetadata(alias="transitionTo"), pydantic.Field(alias="transitionTo", default=None)
+    ]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)

@@ -5,7 +5,7 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .approval_recommendation import ApprovalRecommendation
 from .authority_snapshot import AuthoritySnapshot
@@ -16,28 +16,21 @@ class ApprovalResult(UniversalBaseModel):
     authority_snapshot: typing_extensions.Annotated[
         typing.Optional[AuthoritySnapshot],
         FieldMetadata(alias="authoritySnapshot"),
-        pydantic.Field(alias="authoritySnapshot"),
-    ] = None
+        pydantic.Field(alias="authoritySnapshot", default=None),
+    ]
     decided_at: typing_extensions.Annotated[
         dt.datetime, FieldMetadata(alias="decidedAt"), pydantic.Field(alias="decidedAt")
     ]
     decided_by: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="decidedBy"), pydantic.Field(alias="decidedBy")
-    ] = None
+        typing.Optional[str], FieldMetadata(alias="decidedBy"), pydantic.Field(alias="decidedBy", default=None)
+    ]
     outcome: Outcome
     recommendation_snapshot: typing_extensions.Annotated[
         typing.Optional[ApprovalRecommendation],
         FieldMetadata(alias="recommendationSnapshot"),
-        pydantic.Field(alias="recommendationSnapshot"),
-    ] = None
+        pydantic.Field(alias="recommendationSnapshot", default=None),
+    ]
     request_id: typing_extensions.Annotated[str, FieldMetadata(alias="requestId"), pydantic.Field(alias="requestId")]
     task_id: typing_extensions.Annotated[str, FieldMetadata(alias="taskId"), pydantic.Field(alias="taskId")]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)

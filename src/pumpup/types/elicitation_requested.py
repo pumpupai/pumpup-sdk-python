@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .elicitation_requested_fields_item import ElicitationRequestedFieldsItem
 from .field_bid import FieldBid
@@ -16,16 +16,9 @@ class ElicitationRequested(UniversalBaseModel):
     key_value_context: typing_extensions.Annotated[
         typing.Optional[typing.Dict[str, str]],
         FieldMetadata(alias="keyValueContext"),
-        pydantic.Field(alias="keyValueContext"),
-    ] = None
+        pydantic.Field(alias="keyValueContext", default=None),
+    ]
     recommendation: typing.Optional[typing.List[FieldBid]] = None
     summary: str
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)

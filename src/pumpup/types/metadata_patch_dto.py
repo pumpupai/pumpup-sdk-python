@@ -4,24 +4,21 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
 class MetadataPatchDto(UniversalBaseModel):
     set_: typing_extensions.Annotated[
-        typing.Optional[typing.Dict[str, typing.Any]], FieldMetadata(alias="set"), pydantic.Field(alias="set")
-    ] = None
+        typing.Optional[typing.Dict[str, typing.Any]],
+        FieldMetadata(alias="set"),
+        pydantic.Field(alias="set", default=None),
+    ]
     set_once: typing_extensions.Annotated[
-        typing.Optional[typing.Dict[str, typing.Any]], FieldMetadata(alias="setOnce"), pydantic.Field(alias="setOnce")
-    ] = None
+        typing.Optional[typing.Dict[str, typing.Any]],
+        FieldMetadata(alias="setOnce"),
+        pydantic.Field(alias="setOnce", default=None),
+    ]
     unset: typing.Optional[typing.List[str]] = None
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)

@@ -6,7 +6,7 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .action_detail import ActionDetail
 from .approval_recommendation import ApprovalRecommendation
@@ -24,22 +24,15 @@ class Payload_Action(UniversalBaseModel):
     add_attachments: typing_extensions.Annotated[
         typing.Optional[typing.List[Attachment]],
         FieldMetadata(alias="addAttachments"),
-        pydantic.Field(alias="addAttachments"),
-    ] = None
+        pydantic.Field(alias="addAttachments", default=None),
+    ]
     description: str
     detail: typing.Optional[ActionDetail] = None
     metadata_patch: typing_extensions.Annotated[
         MetadataPatch, FieldMetadata(alias="metadataPatch"), pydantic.Field(alias="metadataPatch")
     ]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_ApprovalDecided(UniversalBaseModel):
@@ -49,17 +42,10 @@ class Payload_ApprovalDecided(UniversalBaseModel):
     recommendation_snapshot: typing_extensions.Annotated[
         typing.Optional[ApprovalRecommendation],
         FieldMetadata(alias="recommendationSnapshot"),
-        pydantic.Field(alias="recommendationSnapshot"),
-    ] = None
+        pydantic.Field(alias="recommendationSnapshot", default=None),
+    ]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_ApprovalRequested(UniversalBaseModel):
@@ -68,50 +54,29 @@ class Payload_ApprovalRequested(UniversalBaseModel):
     key_value_context: typing_extensions.Annotated[
         typing.Optional[typing.Dict[str, str]],
         FieldMetadata(alias="keyValueContext"),
-        pydantic.Field(alias="keyValueContext"),
-    ] = None
+        pydantic.Field(alias="keyValueContext", default=None),
+    ]
     recommendation: typing.Optional[ApprovalRecommendation] = None
     summary: str
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_Assignment(UniversalBaseModel):
     type: typing.Literal["Assignment"] = "Assignment"
     assignee_id: typing_extensions.Annotated[str, FieldMetadata(alias="assigneeId"), pydantic.Field(alias="assigneeId")]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_ElicitationProvided(UniversalBaseModel):
     type: typing.Literal["ElicitationProvided"] = "ElicitationProvided"
     answered_by: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="answeredBy"), pydantic.Field(alias="answeredBy")
-    ] = None
+        typing.Optional[str], FieldMetadata(alias="answeredBy"), pydantic.Field(alias="answeredBy", default=None)
+    ]
     answers: typing.Optional[typing.Dict[str, typing.Any]] = None
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_ElicitationRequested(UniversalBaseModel):
@@ -121,19 +86,12 @@ class Payload_ElicitationRequested(UniversalBaseModel):
     key_value_context: typing_extensions.Annotated[
         typing.Optional[typing.Dict[str, str]],
         FieldMetadata(alias="keyValueContext"),
-        pydantic.Field(alias="keyValueContext"),
-    ] = None
+        pydantic.Field(alias="keyValueContext", default=None),
+    ]
     recommendation: typing.Optional[typing.List[FieldBid]] = None
     summary: str
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_ExceptionRaised(UniversalBaseModel):
@@ -141,28 +99,14 @@ class Payload_ExceptionRaised(UniversalBaseModel):
     detail: typing.Optional[ExceptionRaisedDetail] = None
     message: str
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_Note(UniversalBaseModel):
     type: typing.Literal["Note"] = "Note"
     message: str
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_TaskClosed(UniversalBaseModel):
@@ -171,14 +115,7 @@ class Payload_TaskClosed(UniversalBaseModel):
         str, FieldMetadata(alias="terminalState"), pydantic.Field(alias="terminalState")
     ]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_TaskCreated(UniversalBaseModel):
@@ -191,28 +128,14 @@ class Payload_TaskCreated(UniversalBaseModel):
     ]
     name: str
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 class Payload_Timeout(UniversalBaseModel):
     type: typing.Literal["Timeout"] = "Timeout"
     state: str
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
 
 
 Payload = typing_extensions.Annotated[

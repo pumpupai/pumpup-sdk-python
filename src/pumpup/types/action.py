@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 from .action_detail import ActionDetail
 from .attachment import Attachment
@@ -15,19 +15,12 @@ class Action(UniversalBaseModel):
     add_attachments: typing_extensions.Annotated[
         typing.Optional[typing.List[Attachment]],
         FieldMetadata(alias="addAttachments"),
-        pydantic.Field(alias="addAttachments"),
-    ] = None
+        pydantic.Field(alias="addAttachments", default=None),
+    ]
     description: str
     detail: typing.Optional[ActionDetail] = None
     metadata_patch: typing_extensions.Annotated[
         MetadataPatch, FieldMetadata(alias="metadataPatch"), pydantic.Field(alias="metadataPatch")
     ]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)

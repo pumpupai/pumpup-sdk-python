@@ -4,7 +4,10 @@
   "generatorVersion": "5.14.19",
   "generatorConfig": {
     "client_class_name": "PumpUp",
-    "package_name": "pumpup"
+    "package_name": "pumpup",
+    "pydantic_config": {
+      "version": "v2"
+    }
   },
   "originGitCommit": "b408a92231dd9008873e1618e002c398518599fb",
   "originGitCommitIsDirty": true,
