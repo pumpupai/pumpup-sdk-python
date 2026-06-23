@@ -12,6 +12,6 @@
   "originGitCommit": "c8f0989068449f92027432b31ab17f41db1f3e64",
   "originGitCommitIsDirty": true,
   "invokedBy": "manual",
-  "requestedVersion": "0.0.1",
-  "sdkVersion": "0.0.1"
+  "requestedVersion": "0.0.2",
+  "sdkVersion": "0.0.2"
 }
