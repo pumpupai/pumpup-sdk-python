@@ -4,7 +4,7 @@ dynamic = ["version"]
 
 [tool.poetry]
 name = "pumpup-sdk"
-version = "0.0.7"
+version = "0.0.8"
 description = "Official SDK for the Pump Up agent API — human-in-the-loop approvals, elicitations, and routing for AI agents."
 readme = "README.md"
 authors = [
