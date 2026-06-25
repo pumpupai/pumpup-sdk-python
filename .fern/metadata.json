@@ -9,10 +9,10 @@
       "version": "v2"
     }
   },
-  "originGitCommit": "31173b27e5969d3df9254e1a2316a341bf03392f",
+  "originGitCommit": "835b71b30253d19d7c3c6b8179945c00bd7a508e",
   "originGitCommitIsDirty": false,
   "invokedBy": "ci",
-  "requestedVersion": "0.0.5",
+  "requestedVersion": "0.0.6",
   "ciProvider": "github",
-  "sdkVersion": "0.0.5"
+  "sdkVersion": "0.0.6"
 }
