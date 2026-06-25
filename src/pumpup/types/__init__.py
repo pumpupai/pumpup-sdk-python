@@ -6,16 +6,31 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
+    from .action import Action
+    from .action_detail import ActionDetail
     from .api_error import ApiError
+    from .approval_decided import ApprovalDecided
     from .approval_recommendation import ApprovalRecommendation
+    from .approval_requested import ApprovalRequested
     from .approval_result import ApprovalResult
+    from .assignment import Assignment
     from .attachment import Attachment
     from .authority_snapshot import AuthoritySnapshot
     from .date_field import DateField
     from .date_time import DateTime
+    from .document import Document
+    from .elicitation_provided import ElicitationProvided
+    from .elicitation_requested import ElicitationRequested
+    from .elicitation_requested_fields_item import ElicitationRequestedFieldsItem
     from .elicitation_result import ElicitationResult
     from .error_response import ErrorResponse
     from .event_response import EventResponse
+    from .event_row import EventRow
+    from .event_row_event_type import EventRowEventType
+    from .event_row_owner import EventRowOwner
+    from .event_row_source import EventRowSource
+    from .exception_raised import ExceptionRaised
+    from .exception_raised_detail import ExceptionRaisedDetail
     from .field import (
         Field,
         Field_DateField,
@@ -30,14 +45,29 @@ if typing.TYPE_CHECKING:
         Field_Time,
     )
     from .field_bid import FieldBid
+    from .metadata_patch import MetadataPatch
     from .metadata_patch_dto import MetadataPatchDto
     from .multiselect import Multiselect
+    from .note import Note
     from .number import Number
-    from .object_id import ObjectId
     from .open_request_dto import OpenRequestDto
     from .open_request_dto_event_type import OpenRequestDtoEventType
     from .outcome import Outcome
     from .outcome_type import OutcomeType
+    from .payload import (
+        Payload,
+        Payload_Action,
+        Payload_ApprovalDecided,
+        Payload_ApprovalRequested,
+        Payload_Assignment,
+        Payload_ElicitationProvided,
+        Payload_ElicitationRequested,
+        Payload_ExceptionRaised,
+        Payload_Note,
+        Payload_TaskClosed,
+        Payload_TaskCreated,
+        Payload_Timeout,
+    )
     from .project_list_response import ProjectListResponse
     from .project_response import ProjectResponse
     from .resolved_upload import ResolvedUpload
@@ -46,9 +76,11 @@ if typing.TYPE_CHECKING:
     from .step import Step
     from .step_owner import StepOwner
     from .steps import Steps
-    from .steps_state_schemas import StepsStateSchemas
     from .switch import Switch
+    from .task_closed import TaskClosed
+    from .task_created import TaskCreated
     from .task_detail_response import TaskDetailResponse
+    from .task_events_response import TaskEventsResponse
     from .task_list_response import TaskListResponse
     from .task_response import TaskResponse
     from .task_response_status import TaskResponseStatus
@@ -56,19 +88,35 @@ if typing.TYPE_CHECKING:
     from .text_area import TextArea
     from .text_format import TextFormat
     from .time import Time
+    from .timeout import Timeout
     from .upload_ref import UploadRef
     from .upload_ref_status import UploadRefStatus
 _dynamic_imports: typing.Dict[str, str] = {
+    "Action": ".action",
+    "ActionDetail": ".action_detail",
     "ApiError": ".api_error",
+    "ApprovalDecided": ".approval_decided",
     "ApprovalRecommendation": ".approval_recommendation",
+    "ApprovalRequested": ".approval_requested",
     "ApprovalResult": ".approval_result",
+    "Assignment": ".assignment",
     "Attachment": ".attachment",
     "AuthoritySnapshot": ".authority_snapshot",
     "DateField": ".date_field",
     "DateTime": ".date_time",
+    "Document": ".document",
+    "ElicitationProvided": ".elicitation_provided",
+    "ElicitationRequested": ".elicitation_requested",
+    "ElicitationRequestedFieldsItem": ".elicitation_requested_fields_item",
     "ElicitationResult": ".elicitation_result",
     "ErrorResponse": ".error_response",
     "EventResponse": ".event_response",
+    "EventRow": ".event_row",
+    "EventRowEventType": ".event_row_event_type",
+    "EventRowOwner": ".event_row_owner",
+    "EventRowSource": ".event_row_source",
+    "ExceptionRaised": ".exception_raised",
+    "ExceptionRaisedDetail": ".exception_raised_detail",
     "Field": ".field",
     "FieldBid": ".field_bid",
     "Field_DateField": ".field",
@@ -81,14 +129,27 @@ _dynamic_imports: typing.Dict[str, str] = {
     "Field_Text": ".field",
     "Field_TextArea": ".field",
     "Field_Time": ".field",
+    "MetadataPatch": ".metadata_patch",
     "MetadataPatchDto": ".metadata_patch_dto",
     "Multiselect": ".multiselect",
+    "Note": ".note",
     "Number": ".number",
-    "ObjectId": ".object_id",
     "OpenRequestDto": ".open_request_dto",
     "OpenRequestDtoEventType": ".open_request_dto_event_type",
     "Outcome": ".outcome",
     "OutcomeType": ".outcome_type",
+    "Payload": ".payload",
+    "Payload_Action": ".payload",
+    "Payload_ApprovalDecided": ".payload",
+    "Payload_ApprovalRequested": ".payload",
+    "Payload_Assignment": ".payload",
+    "Payload_ElicitationProvided": ".payload",
+    "Payload_ElicitationRequested": ".payload",
+    "Payload_ExceptionRaised": ".payload",
+    "Payload_Note": ".payload",
+    "Payload_TaskClosed": ".payload",
+    "Payload_TaskCreated": ".payload",
+    "Payload_Timeout": ".payload",
     "ProjectListResponse": ".project_list_response",
     "ProjectResponse": ".project_response",
     "ResolvedUpload": ".resolved_upload",
@@ -97,9 +158,11 @@ _dynamic_imports: typing.Dict[str, str] = {
     "Step": ".step",
     "StepOwner": ".step_owner",
     "Steps": ".steps",
-    "StepsStateSchemas": ".steps_state_schemas",
     "Switch": ".switch",
+    "TaskClosed": ".task_closed",
+    "TaskCreated": ".task_created",
     "TaskDetailResponse": ".task_detail_response",
+    "TaskEventsResponse": ".task_events_response",
     "TaskListResponse": ".task_list_response",
     "TaskResponse": ".task_response",
     "TaskResponseStatus": ".task_response_status",
@@ -107,6 +170,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "TextArea": ".text_area",
     "TextFormat": ".text_format",
     "Time": ".time",
+    "Timeout": ".timeout",
     "UploadRef": ".upload_ref",
     "UploadRefStatus": ".upload_ref_status",
 }
@@ -134,16 +198,31 @@ def __dir__():
 
 
 __all__ = [
+    "Action",
+    "ActionDetail",
     "ApiError",
+    "ApprovalDecided",
     "ApprovalRecommendation",
+    "ApprovalRequested",
     "ApprovalResult",
+    "Assignment",
     "Attachment",
     "AuthoritySnapshot",
     "DateField",
     "DateTime",
+    "Document",
+    "ElicitationProvided",
+    "ElicitationRequested",
+    "ElicitationRequestedFieldsItem",
     "ElicitationResult",
     "ErrorResponse",
     "EventResponse",
+    "EventRow",
+    "EventRowEventType",
+    "EventRowOwner",
+    "EventRowSource",
+    "ExceptionRaised",
+    "ExceptionRaisedDetail",
     "Field",
     "FieldBid",
     "Field_DateField",
@@ -156,14 +235,27 @@ __all__ = [
     "Field_Text",
     "Field_TextArea",
     "Field_Time",
+    "MetadataPatch",
     "MetadataPatchDto",
     "Multiselect",
+    "Note",
     "Number",
-    "ObjectId",
     "OpenRequestDto",
     "OpenRequestDtoEventType",
     "Outcome",
     "OutcomeType",
+    "Payload",
+    "Payload_Action",
+    "Payload_ApprovalDecided",
+    "Payload_ApprovalRequested",
+    "Payload_Assignment",
+    "Payload_ElicitationProvided",
+    "Payload_ElicitationRequested",
+    "Payload_ExceptionRaised",
+    "Payload_Note",
+    "Payload_TaskClosed",
+    "Payload_TaskCreated",
+    "Payload_Timeout",
     "ProjectListResponse",
     "ProjectResponse",
     "ResolvedUpload",
@@ -172,9 +264,11 @@ __all__ = [
     "Step",
     "StepOwner",
     "Steps",
-    "StepsStateSchemas",
     "Switch",
+    "TaskClosed",
+    "TaskCreated",
     "TaskDetailResponse",
+    "TaskEventsResponse",
     "TaskListResponse",
     "TaskResponse",
     "TaskResponseStatus",
@@ -182,6 +276,7 @@ __all__ = [
     "TextArea",
     "TextFormat",
     "Time",
+    "Timeout",
     "UploadRef",
     "UploadRefStatus",
 ]

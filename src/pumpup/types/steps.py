@@ -4,26 +4,19 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
+from .document import Document
 from .step import Step
-from .steps_state_schemas import StepsStateSchemas
 
 
 class Steps(UniversalBaseModel):
-    initial_state: typing_extensions.Annotated[
-        str, FieldMetadata(alias="initialState"), pydantic.Field(alias="initialState")
+    initial_step: typing_extensions.Annotated[
+        str, FieldMetadata(alias="initialStep"), pydantic.Field(alias="initialStep")
     ]
-    state_schemas: typing_extensions.Annotated[
-        typing.Optional[StepsStateSchemas], FieldMetadata(alias="stateSchemas"), pydantic.Field(alias="stateSchemas")
-    ] = None
+    step_schemas: typing_extensions.Annotated[
+        typing.Optional[Document], FieldMetadata(alias="stepSchemas"), pydantic.Field(alias="stepSchemas", default=None)
+    ]
     steps: typing.List[Step]
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)

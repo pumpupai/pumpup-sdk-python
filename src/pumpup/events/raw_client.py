@@ -35,11 +35,11 @@ class RawEventsClient:
         idempotency_key: str,
         description: str,
         project_name: str,
+        task_id: str,
         add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
         detail: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         transitions_to: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EventResponse]:
@@ -54,6 +54,9 @@ class RawEventsClient:
 
         project_name : str
 
+        task_id : str
+            Target task — create one via POST /tasks first
+
         add_attachments : typing.Optional[typing.Sequence[Attachment]]
             Files to attach to the task — upload id + display name (each id from POST /uploads)
 
@@ -62,8 +65,6 @@ class RawEventsClient:
         external_trace_id : typing.Optional[str]
 
         metadata_patch : typing.Optional[MetadataPatchDto]
-
-        task_id : typing.Optional[str]
 
         transitions_to : typing.Optional[str]
             State to transition the task into; must be a declared transition
@@ -173,11 +174,9 @@ class RawEventsClient:
         idempotency_key: str,
         message: str,
         project_name: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
+        task_id: str,
         detail: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         transitions_to: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EventResponse]:
@@ -192,16 +191,12 @@ class RawEventsClient:
 
         project_name : str
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
         detail : typing.Optional[typing.Dict[str, typing.Any]]
 
         external_trace_id : typing.Optional[str]
-
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
-        task_id : typing.Optional[str]
 
         transitions_to : typing.Optional[str]
 
@@ -217,15 +212,9 @@ class RawEventsClient:
             "api/exceptions",
             method="POST",
             json={
-                "addAttachments": convert_and_respect_annotation_metadata(
-                    object_=add_attachments, annotation=typing.Sequence[Attachment], direction="write"
-                ),
                 "detail": detail,
                 "externalTraceId": external_trace_id,
                 "message": message,
-                "metadataPatch": convert_and_respect_annotation_metadata(
-                    object_=metadata_patch, annotation=MetadataPatchDto, direction="write"
-                ),
                 "projectName": project_name,
                 "taskId": task_id,
                 "transitionsTo": transitions_to,
@@ -310,8 +299,8 @@ class RawEventsClient:
         idempotency_key: str,
         message: str,
         project_name: str,
+        task_id: str,
         external_trace_id: typing.Optional[str] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EventResponse]:
         """
@@ -325,9 +314,10 @@ class RawEventsClient:
 
         project_name : str
 
-        external_trace_id : typing.Optional[str]
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        task_id : typing.Optional[str]
+        external_trace_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -431,11 +421,11 @@ class AsyncRawEventsClient:
         idempotency_key: str,
         description: str,
         project_name: str,
+        task_id: str,
         add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
         detail: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         transitions_to: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EventResponse]:
@@ -450,6 +440,9 @@ class AsyncRawEventsClient:
 
         project_name : str
 
+        task_id : str
+            Target task — create one via POST /tasks first
+
         add_attachments : typing.Optional[typing.Sequence[Attachment]]
             Files to attach to the task — upload id + display name (each id from POST /uploads)
 
@@ -458,8 +451,6 @@ class AsyncRawEventsClient:
         external_trace_id : typing.Optional[str]
 
         metadata_patch : typing.Optional[MetadataPatchDto]
-
-        task_id : typing.Optional[str]
 
         transitions_to : typing.Optional[str]
             State to transition the task into; must be a declared transition
@@ -569,11 +560,9 @@ class AsyncRawEventsClient:
         idempotency_key: str,
         message: str,
         project_name: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
+        task_id: str,
         detail: typing.Optional[typing.Dict[str, typing.Any]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         transitions_to: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EventResponse]:
@@ -588,16 +577,12 @@ class AsyncRawEventsClient:
 
         project_name : str
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
         detail : typing.Optional[typing.Dict[str, typing.Any]]
 
         external_trace_id : typing.Optional[str]
-
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
-        task_id : typing.Optional[str]
 
         transitions_to : typing.Optional[str]
 
@@ -613,15 +598,9 @@ class AsyncRawEventsClient:
             "api/exceptions",
             method="POST",
             json={
-                "addAttachments": convert_and_respect_annotation_metadata(
-                    object_=add_attachments, annotation=typing.Sequence[Attachment], direction="write"
-                ),
                 "detail": detail,
                 "externalTraceId": external_trace_id,
                 "message": message,
-                "metadataPatch": convert_and_respect_annotation_metadata(
-                    object_=metadata_patch, annotation=MetadataPatchDto, direction="write"
-                ),
                 "projectName": project_name,
                 "taskId": task_id,
                 "transitionsTo": transitions_to,
@@ -706,8 +685,8 @@ class AsyncRawEventsClient:
         idempotency_key: str,
         message: str,
         project_name: str,
+        task_id: str,
         external_trace_id: typing.Optional[str] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EventResponse]:
         """
@@ -721,9 +700,10 @@ class AsyncRawEventsClient:
 
         project_name : str
 
-        external_trace_id : typing.Optional[str]
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        task_id : typing.Optional[str]
+        external_trace_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

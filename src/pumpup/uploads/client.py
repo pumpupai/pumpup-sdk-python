@@ -5,7 +5,6 @@ import typing
 from .. import core
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.object_id import ObjectId
 from ..types.resolved_upload import ResolvedUpload
 from ..types.upload_ref import UploadRef
 from .raw_client import AsyncRawUploadsClient, RawUploadsClient
@@ -57,11 +56,11 @@ class UploadsClient:
         _response = self._raw_client.upload(file=file, request_options=request_options)
         return _response.data
 
-    def get(self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None) -> ResolvedUpload:
+    def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ResolvedUpload:
         """
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -138,11 +137,11 @@ class AsyncUploadsClient:
         _response = await self._raw_client.upload(file=file, request_options=request_options)
         return _response.data
 
-    async def get(self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None) -> ResolvedUpload:
+    async def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ResolvedUpload:
         """
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

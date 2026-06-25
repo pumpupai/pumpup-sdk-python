@@ -16,14 +16,11 @@ from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
-from ..types.attachment import Attachment
 from ..types.elicitation_result import ElicitationResult
 from ..types.error_response import ErrorResponse
 from ..types.event_response import EventResponse
+from ..types.field import Field
 from ..types.field_bid import FieldBid
-from ..types.metadata_patch_dto import MetadataPatchDto
-from ..types.object_id import ObjectId
-from .types.create_elicitation_request_fields_item import CreateElicitationRequestFieldsItem
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -38,16 +35,14 @@ class RawElicitationsClient:
         self,
         *,
         idempotency_key: str,
-        fields: typing.Sequence[CreateElicitationRequestFieldsItem],
+        fields: typing.Sequence[Field],
         project_name: str,
         summary: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
-        attachments: typing.Optional[typing.Sequence[ObjectId]] = OMIT,
+        task_id: str,
+        attachments: typing.Optional[typing.Sequence[str]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         key_value_context: typing.Optional[typing.Dict[str, str]] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         recommendation: typing.Optional[typing.Sequence[FieldBid]] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EventResponse]:
         """
@@ -58,28 +53,24 @@ class RawElicitationsClient:
         idempotency_key : str
             Idempotency key; duplicate submissions return the original event.
 
-        fields : typing.Sequence[CreateElicitationRequestFieldsItem]
+        fields : typing.Sequence[Field]
 
         project_name : str
 
         summary : str
             Human-readable summary of what's needed
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        attachments : typing.Optional[typing.Sequence[ObjectId]]
+        attachments : typing.Optional[typing.Sequence[str]]
             Upload ids of attached files to render for this request (must already be attached to the task)
 
         external_trace_id : typing.Optional[str]
 
         key_value_context : typing.Optional[typing.Dict[str, str]]
 
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
         recommendation : typing.Optional[typing.Sequence[FieldBid]]
-
-        task_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -93,20 +84,12 @@ class RawElicitationsClient:
             "api/elicitation-requests",
             method="POST",
             json={
-                "addAttachments": convert_and_respect_annotation_metadata(
-                    object_=add_attachments, annotation=typing.Sequence[Attachment], direction="write"
-                ),
-                "attachments": convert_and_respect_annotation_metadata(
-                    object_=attachments, annotation=typing.Sequence[ObjectId], direction="write"
-                ),
+                "attachments": attachments,
                 "externalTraceId": external_trace_id,
                 "fields": convert_and_respect_annotation_metadata(
-                    object_=fields, annotation=typing.Sequence[CreateElicitationRequestFieldsItem], direction="write"
+                    object_=fields, annotation=typing.Sequence[Field], direction="write"
                 ),
                 "keyValueContext": key_value_context,
-                "metadataPatch": convert_and_respect_annotation_metadata(
-                    object_=metadata_patch, annotation=MetadataPatchDto, direction="write"
-                ),
                 "projectName": project_name,
                 "recommendation": convert_and_respect_annotation_metadata(
                     object_=recommendation, annotation=typing.Sequence[FieldBid], direction="write"
@@ -189,34 +172,36 @@ class RawElicitationsClient:
         )
 
     def get_result(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ElicitationResult]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[typing.Optional[ElicitationResult]]:
         """
         200 with the provided fields once a human has answered; 204 while still pending.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ElicitationResult]
+        HttpResponse[typing.Optional[ElicitationResult]]
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"api/elicitation-requests/{encode_path_param(convert_and_respect_annotation_metadata(object_=id, annotation=ObjectId, direction='write'))}/result",
+            f"api/elicitation-requests/{encode_path_param(id)}/result",
             method="GET",
             request_options=request_options,
         )
         try:
+            if _response is None or not _response.text.strip():
+                return HttpResponse(response=_response, data=None)
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ElicitationResult,
+                    typing.Optional[ElicitationResult],
                     parse_obj_as(
-                        type_=ElicitationResult,  # type: ignore
+                        type_=typing.Optional[ElicitationResult],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -287,16 +272,14 @@ class AsyncRawElicitationsClient:
         self,
         *,
         idempotency_key: str,
-        fields: typing.Sequence[CreateElicitationRequestFieldsItem],
+        fields: typing.Sequence[Field],
         project_name: str,
         summary: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
-        attachments: typing.Optional[typing.Sequence[ObjectId]] = OMIT,
+        task_id: str,
+        attachments: typing.Optional[typing.Sequence[str]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         key_value_context: typing.Optional[typing.Dict[str, str]] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         recommendation: typing.Optional[typing.Sequence[FieldBid]] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EventResponse]:
         """
@@ -307,28 +290,24 @@ class AsyncRawElicitationsClient:
         idempotency_key : str
             Idempotency key; duplicate submissions return the original event.
 
-        fields : typing.Sequence[CreateElicitationRequestFieldsItem]
+        fields : typing.Sequence[Field]
 
         project_name : str
 
         summary : str
             Human-readable summary of what's needed
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        attachments : typing.Optional[typing.Sequence[ObjectId]]
+        attachments : typing.Optional[typing.Sequence[str]]
             Upload ids of attached files to render for this request (must already be attached to the task)
 
         external_trace_id : typing.Optional[str]
 
         key_value_context : typing.Optional[typing.Dict[str, str]]
 
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
         recommendation : typing.Optional[typing.Sequence[FieldBid]]
-
-        task_id : typing.Optional[str]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -342,20 +321,12 @@ class AsyncRawElicitationsClient:
             "api/elicitation-requests",
             method="POST",
             json={
-                "addAttachments": convert_and_respect_annotation_metadata(
-                    object_=add_attachments, annotation=typing.Sequence[Attachment], direction="write"
-                ),
-                "attachments": convert_and_respect_annotation_metadata(
-                    object_=attachments, annotation=typing.Sequence[ObjectId], direction="write"
-                ),
+                "attachments": attachments,
                 "externalTraceId": external_trace_id,
                 "fields": convert_and_respect_annotation_metadata(
-                    object_=fields, annotation=typing.Sequence[CreateElicitationRequestFieldsItem], direction="write"
+                    object_=fields, annotation=typing.Sequence[Field], direction="write"
                 ),
                 "keyValueContext": key_value_context,
-                "metadataPatch": convert_and_respect_annotation_metadata(
-                    object_=metadata_patch, annotation=MetadataPatchDto, direction="write"
-                ),
                 "projectName": project_name,
                 "recommendation": convert_and_respect_annotation_metadata(
                     object_=recommendation, annotation=typing.Sequence[FieldBid], direction="write"
@@ -438,34 +409,36 @@ class AsyncRawElicitationsClient:
         )
 
     async def get_result(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ElicitationResult]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[typing.Optional[ElicitationResult]]:
         """
         200 with the provided fields once a human has answered; 204 while still pending.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ElicitationResult]
+        AsyncHttpResponse[typing.Optional[ElicitationResult]]
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"api/elicitation-requests/{encode_path_param(convert_and_respect_annotation_metadata(object_=id, annotation=ObjectId, direction='write'))}/result",
+            f"api/elicitation-requests/{encode_path_param(id)}/result",
             method="GET",
             request_options=request_options,
         )
         try:
+            if _response is None or not _response.text.strip():
+                return AsyncHttpResponse(response=_response, data=None)
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ElicitationResult,
+                    typing.Optional[ElicitationResult],
                     parse_obj_as(
-                        type_=ElicitationResult,  # type: ignore
+                        type_=typing.Optional[ElicitationResult],  # type: ignore
                         object_=_response.json(),
                     ),
                 )

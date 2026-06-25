@@ -4,10 +4,15 @@
   "generatorVersion": "5.14.19",
   "generatorConfig": {
     "client_class_name": "PumpUp",
-    "package_name": "pumpup"
+    "package_name": "pumpup",
+    "pydantic_config": {
+      "version": "v2"
+    }
   },
-  "originGitCommit": "d8414f398efe75330a371e2c6784f7a5f3aec3a2",
-  "originGitCommitIsDirty": true,
-  "invokedBy": "manual",
-  "sdkVersion": "0.0.1"
+  "originGitCommit": "31173b27e5969d3df9254e1a2316a341bf03392f",
+  "originGitCommitIsDirty": false,
+  "invokedBy": "ci",
+  "requestedVersion": "0.0.5",
+  "ciProvider": "github",
+  "sdkVersion": "0.0.5"
 }

@@ -11,14 +11,12 @@ from ..core.jsonable_encoder import encode_path_param
 from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
-from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
 from ..errors.conflict_error import ConflictError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.error_response import ErrorResponse
-from ..types.object_id import ObjectId
 from ..types.resolved_upload import ResolvedUpload
 from ..types.upload_ref import UploadRef
 from pydantic import ValidationError
@@ -126,13 +124,11 @@ class RawUploadsClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
-    def get(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ResolvedUpload]:
+    def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[ResolvedUpload]:
         """
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -143,7 +139,7 @@ class RawUploadsClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"api/uploads/{encode_path_param(convert_and_respect_annotation_metadata(object_=id, annotation=ObjectId, direction='write'))}",
+            f"api/uploads/{encode_path_param(id)}",
             method="GET",
             request_options=request_options,
         )
@@ -315,12 +311,12 @@ class AsyncRawUploadsClient:
         )
 
     async def get(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[ResolvedUpload]:
         """
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -331,7 +327,7 @@ class AsyncRawUploadsClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"api/uploads/{encode_path_param(convert_and_respect_annotation_metadata(object_=id, annotation=ObjectId, direction='write'))}",
+            f"api/uploads/{encode_path_param(id)}",
             method="GET",
             request_options=request_options,
         )

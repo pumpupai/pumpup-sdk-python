@@ -18,8 +18,8 @@ from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.error_response import ErrorResponse
 from ..types.metadata_patch_dto import MetadataPatchDto
-from ..types.object_id import ObjectId
 from ..types.task_detail_response import TaskDetailResponse
+from ..types.task_events_response import TaskEventsResponse
 from ..types.task_list_response import TaskListResponse
 from ..types.task_response import TaskResponse
 from pydantic import ValidationError
@@ -35,7 +35,7 @@ class RawTasksClient:
     def list(
         self,
         *,
-        project_id: typing.Optional[ObjectId] = None,
+        project_id: typing.Optional[str] = None,
         name: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[TaskListResponse]:
@@ -44,7 +44,7 @@ class RawTasksClient:
 
         Parameters
         ----------
-        project_id : typing.Optional[ObjectId]
+        project_id : typing.Optional[str]
 
         name : typing.Optional[str]
 
@@ -60,9 +60,7 @@ class RawTasksClient:
             "api/tasks",
             method="GET",
             params={
-                "projectId": convert_and_respect_annotation_metadata(
-                    object_=project_id, annotation=ObjectId, direction="write"
-                ),
+                "projectId": project_id,
                 "name": name,
             },
             request_options=request_options,
@@ -140,6 +138,7 @@ class RawTasksClient:
         idempotency_key: str,
         name: str,
         project_name: str,
+        external_id: typing.Optional[str] = OMIT,
         metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[TaskResponse]:
@@ -157,6 +156,9 @@ class RawTasksClient:
         project_name : str
             Slug of an existing project
 
+        external_id : typing.Optional[str]
+            Optional client correlation id (e.g. agent session/run); bookkeeping only — not unique
+
         metadata_patch : typing.Optional[MetadataPatchDto]
 
         request_options : typing.Optional[RequestOptions]
@@ -171,6 +173,7 @@ class RawTasksClient:
             "api/tasks",
             method="POST",
             json={
+                "externalId": external_id,
                 "metadataPatch": convert_and_respect_annotation_metadata(
                     object_=metadata_patch, annotation=MetadataPatchDto, direction="write"
                 ),
@@ -252,14 +255,14 @@ class RawTasksClient:
         )
 
     def get(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[TaskDetailResponse]:
         """
         Materialized state — name, current state, metadata, attachments — plus open requests awaiting a human.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -270,7 +273,7 @@ class RawTasksClient:
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"api/tasks/{encode_path_param(convert_and_respect_annotation_metadata(object_=id, annotation=ObjectId, direction='write'))}",
+            f"api/tasks/{encode_path_param(id)}",
             method="GET",
             request_options=request_options,
         )
@@ -341,6 +344,109 @@ class RawTasksClient:
             status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
         )
 
+    def events(
+        self,
+        id: str,
+        *,
+        cursor: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[TaskEventsResponse]:
+        """
+        Ascending cursor tail over the task's event log; pass nextCursor back as ?cursor= to resume. An absent cursor starts at the first event.
+
+        Parameters
+        ----------
+        id : str
+
+        cursor : typing.Optional[str]
+
+        limit : typing.Optional[int]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[TaskEventsResponse]
+            OK
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"api/tasks/{encode_path_param(id)}/events",
+            method="GET",
+            params={
+                "cursor": cursor,
+                "limit": limit,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TaskEventsResponse,
+                    parse_obj_as(
+                        type_=TaskEventsResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponse,
+                        parse_obj_as(
+                            type_=ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponse,
+                        parse_obj_as(
+                            type_=ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponse,
+                        parse_obj_as(
+                            type_=ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
 
 class AsyncRawTasksClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -349,7 +455,7 @@ class AsyncRawTasksClient:
     async def list(
         self,
         *,
-        project_id: typing.Optional[ObjectId] = None,
+        project_id: typing.Optional[str] = None,
         name: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[TaskListResponse]:
@@ -358,7 +464,7 @@ class AsyncRawTasksClient:
 
         Parameters
         ----------
-        project_id : typing.Optional[ObjectId]
+        project_id : typing.Optional[str]
 
         name : typing.Optional[str]
 
@@ -374,9 +480,7 @@ class AsyncRawTasksClient:
             "api/tasks",
             method="GET",
             params={
-                "projectId": convert_and_respect_annotation_metadata(
-                    object_=project_id, annotation=ObjectId, direction="write"
-                ),
+                "projectId": project_id,
                 "name": name,
             },
             request_options=request_options,
@@ -454,6 +558,7 @@ class AsyncRawTasksClient:
         idempotency_key: str,
         name: str,
         project_name: str,
+        external_id: typing.Optional[str] = OMIT,
         metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[TaskResponse]:
@@ -471,6 +576,9 @@ class AsyncRawTasksClient:
         project_name : str
             Slug of an existing project
 
+        external_id : typing.Optional[str]
+            Optional client correlation id (e.g. agent session/run); bookkeeping only — not unique
+
         metadata_patch : typing.Optional[MetadataPatchDto]
 
         request_options : typing.Optional[RequestOptions]
@@ -485,6 +593,7 @@ class AsyncRawTasksClient:
             "api/tasks",
             method="POST",
             json={
+                "externalId": external_id,
                 "metadataPatch": convert_and_respect_annotation_metadata(
                     object_=metadata_patch, annotation=MetadataPatchDto, direction="write"
                 ),
@@ -566,14 +675,14 @@ class AsyncRawTasksClient:
         )
 
     async def get(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[TaskDetailResponse]:
         """
         Materialized state — name, current state, metadata, attachments — plus open requests awaiting a human.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -584,7 +693,7 @@ class AsyncRawTasksClient:
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"api/tasks/{encode_path_param(convert_and_respect_annotation_metadata(object_=id, annotation=ObjectId, direction='write'))}",
+            f"api/tasks/{encode_path_param(id)}",
             method="GET",
             request_options=request_options,
         )
@@ -594,6 +703,109 @@ class AsyncRawTasksClient:
                     TaskDetailResponse,
                     parse_obj_as(
                         type_=TaskDetailResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        types_api_error_ApiError,
+                        parse_obj_as(
+                            type_=types_api_error_ApiError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponse,
+                        parse_obj_as(
+                            type_=ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 409:
+                raise ConflictError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponse,
+                        parse_obj_as(
+                            type_=ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponse,
+                        parse_obj_as(
+                            type_=ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise core_api_error_ApiError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.text
+            )
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise core_api_error_ApiError(
+            status_code=_response.status_code, headers=dict(_response.headers), body=_response_json
+        )
+
+    async def events(
+        self,
+        id: str,
+        *,
+        cursor: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[TaskEventsResponse]:
+        """
+        Ascending cursor tail over the task's event log; pass nextCursor back as ?cursor= to resume. An absent cursor starts at the first event.
+
+        Parameters
+        ----------
+        id : str
+
+        cursor : typing.Optional[str]
+
+        limit : typing.Optional[int]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[TaskEventsResponse]
+            OK
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"api/tasks/{encode_path_param(id)}/events",
+            method="GET",
+            params={
+                "cursor": cursor,
+                "limit": limit,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TaskEventsResponse,
+                    parse_obj_as(
+                        type_=TaskEventsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

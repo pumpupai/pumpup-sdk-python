@@ -18,11 +18,8 @@ from ..errors.not_found_error import NotFoundError
 from ..types.api_error import ApiError as types_api_error_ApiError
 from ..types.approval_recommendation import ApprovalRecommendation
 from ..types.approval_result import ApprovalResult
-from ..types.attachment import Attachment
 from ..types.error_response import ErrorResponse
 from ..types.event_response import EventResponse
-from ..types.metadata_patch_dto import MetadataPatchDto
-from ..types.object_id import ObjectId
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
@@ -39,13 +36,11 @@ class RawApprovalsClient:
         idempotency_key: str,
         project_name: str,
         summary: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
-        attachments: typing.Optional[typing.Sequence[ObjectId]] = OMIT,
+        task_id: str,
+        attachments: typing.Optional[typing.Sequence[str]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         key_value_context: typing.Optional[typing.Dict[str, str]] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         recommendation: typing.Optional[ApprovalRecommendation] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EventResponse]:
         """
@@ -62,10 +57,10 @@ class RawApprovalsClient:
         summary : str
             Human-readable summary of the action needing approval
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        attachments : typing.Optional[typing.Sequence[ObjectId]]
+        attachments : typing.Optional[typing.Sequence[str]]
             Upload ids of attached files to render for this request (must already be attached to the task)
 
         external_trace_id : typing.Optional[str]
@@ -74,12 +69,7 @@ class RawApprovalsClient:
         key_value_context : typing.Optional[typing.Dict[str, str]]
             Display context as a plain key→value object (order/dup-keys are the client's concern)
 
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
         recommendation : typing.Optional[ApprovalRecommendation]
-
-        task_id : typing.Optional[str]
-            Target task; omit to use the project's singleton task
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -93,17 +83,9 @@ class RawApprovalsClient:
             "api/approval-requests",
             method="POST",
             json={
-                "addAttachments": convert_and_respect_annotation_metadata(
-                    object_=add_attachments, annotation=typing.Sequence[Attachment], direction="write"
-                ),
-                "attachments": convert_and_respect_annotation_metadata(
-                    object_=attachments, annotation=typing.Sequence[ObjectId], direction="write"
-                ),
+                "attachments": attachments,
                 "externalTraceId": external_trace_id,
                 "keyValueContext": key_value_context,
-                "metadataPatch": convert_and_respect_annotation_metadata(
-                    object_=metadata_patch, annotation=MetadataPatchDto, direction="write"
-                ),
                 "projectName": project_name,
                 "recommendation": convert_and_respect_annotation_metadata(
                     object_=recommendation, annotation=ApprovalRecommendation, direction="write"
@@ -186,34 +168,36 @@ class RawApprovalsClient:
         )
 
     def get_result(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ApprovalResult]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[typing.Optional[ApprovalResult]]:
         """
         200 with the outcome once a human has decided; 204 while still pending.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ApprovalResult]
+        HttpResponse[typing.Optional[ApprovalResult]]
             OK
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"api/approval-requests/{encode_path_param(convert_and_respect_annotation_metadata(object_=id, annotation=ObjectId, direction='write'))}/result",
+            f"api/approval-requests/{encode_path_param(id)}/result",
             method="GET",
             request_options=request_options,
         )
         try:
+            if _response is None or not _response.text.strip():
+                return HttpResponse(response=_response, data=None)
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApprovalResult,
+                    typing.Optional[ApprovalResult],
                     parse_obj_as(
-                        type_=ApprovalResult,  # type: ignore
+                        type_=typing.Optional[ApprovalResult],  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -286,13 +270,11 @@ class AsyncRawApprovalsClient:
         idempotency_key: str,
         project_name: str,
         summary: str,
-        add_attachments: typing.Optional[typing.Sequence[Attachment]] = OMIT,
-        attachments: typing.Optional[typing.Sequence[ObjectId]] = OMIT,
+        task_id: str,
+        attachments: typing.Optional[typing.Sequence[str]] = OMIT,
         external_trace_id: typing.Optional[str] = OMIT,
         key_value_context: typing.Optional[typing.Dict[str, str]] = OMIT,
-        metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         recommendation: typing.Optional[ApprovalRecommendation] = OMIT,
-        task_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EventResponse]:
         """
@@ -309,10 +291,10 @@ class AsyncRawApprovalsClient:
         summary : str
             Human-readable summary of the action needing approval
 
-        add_attachments : typing.Optional[typing.Sequence[Attachment]]
-            Files to attach to the task — upload id + display name (each id from POST /uploads)
+        task_id : str
+            Target task — create one via POST /tasks first
 
-        attachments : typing.Optional[typing.Sequence[ObjectId]]
+        attachments : typing.Optional[typing.Sequence[str]]
             Upload ids of attached files to render for this request (must already be attached to the task)
 
         external_trace_id : typing.Optional[str]
@@ -321,12 +303,7 @@ class AsyncRawApprovalsClient:
         key_value_context : typing.Optional[typing.Dict[str, str]]
             Display context as a plain key→value object (order/dup-keys are the client's concern)
 
-        metadata_patch : typing.Optional[MetadataPatchDto]
-
         recommendation : typing.Optional[ApprovalRecommendation]
-
-        task_id : typing.Optional[str]
-            Target task; omit to use the project's singleton task
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -340,17 +317,9 @@ class AsyncRawApprovalsClient:
             "api/approval-requests",
             method="POST",
             json={
-                "addAttachments": convert_and_respect_annotation_metadata(
-                    object_=add_attachments, annotation=typing.Sequence[Attachment], direction="write"
-                ),
-                "attachments": convert_and_respect_annotation_metadata(
-                    object_=attachments, annotation=typing.Sequence[ObjectId], direction="write"
-                ),
+                "attachments": attachments,
                 "externalTraceId": external_trace_id,
                 "keyValueContext": key_value_context,
-                "metadataPatch": convert_and_respect_annotation_metadata(
-                    object_=metadata_patch, annotation=MetadataPatchDto, direction="write"
-                ),
                 "projectName": project_name,
                 "recommendation": convert_and_respect_annotation_metadata(
                     object_=recommendation, annotation=ApprovalRecommendation, direction="write"
@@ -433,34 +402,36 @@ class AsyncRawApprovalsClient:
         )
 
     async def get_result(
-        self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ApprovalResult]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[typing.Optional[ApprovalResult]]:
         """
         200 with the outcome once a human has decided; 204 while still pending.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ApprovalResult]
+        AsyncHttpResponse[typing.Optional[ApprovalResult]]
             OK
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"api/approval-requests/{encode_path_param(convert_and_respect_annotation_metadata(object_=id, annotation=ObjectId, direction='write'))}/result",
+            f"api/approval-requests/{encode_path_param(id)}/result",
             method="GET",
             request_options=request_options,
         )
         try:
+            if _response is None or not _response.text.strip():
+                return AsyncHttpResponse(response=_response, data=None)
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ApprovalResult,
+                    typing.Optional[ApprovalResult],
                     parse_obj_as(
-                        type_=ApprovalResult,  # type: ignore
+                        type_=typing.Optional[ApprovalResult],  # type: ignore
                         object_=_response.json(),
                     ),
                 )

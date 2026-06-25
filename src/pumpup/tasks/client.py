@@ -5,8 +5,8 @@ import typing
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.metadata_patch_dto import MetadataPatchDto
-from ..types.object_id import ObjectId
 from ..types.task_detail_response import TaskDetailResponse
+from ..types.task_events_response import TaskEventsResponse
 from ..types.task_list_response import TaskListResponse
 from ..types.task_response import TaskResponse
 from .raw_client import AsyncRawTasksClient, RawTasksClient
@@ -33,7 +33,7 @@ class TasksClient:
     def list(
         self,
         *,
-        project_id: typing.Optional[ObjectId] = None,
+        project_id: typing.Optional[str] = None,
         name: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TaskListResponse:
@@ -42,7 +42,7 @@ class TasksClient:
 
         Parameters
         ----------
-        project_id : typing.Optional[ObjectId]
+        project_id : typing.Optional[str]
 
         name : typing.Optional[str]
 
@@ -73,6 +73,7 @@ class TasksClient:
         idempotency_key: str,
         name: str,
         project_name: str,
+        external_id: typing.Optional[str] = OMIT,
         metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TaskResponse:
@@ -89,6 +90,9 @@ class TasksClient:
 
         project_name : str
             Slug of an existing project
+
+        external_id : typing.Optional[str]
+            Optional client correlation id (e.g. agent session/run); bookkeeping only — not unique
 
         metadata_patch : typing.Optional[MetadataPatchDto]
 
@@ -118,18 +122,19 @@ class TasksClient:
             idempotency_key=idempotency_key,
             name=name,
             project_name=project_name,
+            external_id=external_id,
             metadata_patch=metadata_patch,
             request_options=request_options,
         )
         return _response.data
 
-    def get(self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None) -> TaskDetailResponse:
+    def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> TaskDetailResponse:
         """
         Materialized state — name, current state, metadata, attachments — plus open requests awaiting a human.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -154,6 +159,48 @@ class TasksClient:
         _response = self._raw_client.get(id, request_options=request_options)
         return _response.data
 
+    def events(
+        self,
+        id: str,
+        *,
+        cursor: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TaskEventsResponse:
+        """
+        Ascending cursor tail over the task's event log; pass nextCursor back as ?cursor= to resume. An absent cursor starts at the first event.
+
+        Parameters
+        ----------
+        id : str
+
+        cursor : typing.Optional[str]
+
+        limit : typing.Optional[int]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TaskEventsResponse
+            OK
+
+        Examples
+        --------
+        from pumpup import PumpUp
+
+        client = PumpUp(
+            "0",
+            api_key="YOUR_API_KEY",
+        )
+        client.tasks.events(
+            id="id",
+        )
+        """
+        _response = self._raw_client.events(id, cursor=cursor, limit=limit, request_options=request_options)
+        return _response.data
+
 
 class AsyncTasksClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -173,7 +220,7 @@ class AsyncTasksClient:
     async def list(
         self,
         *,
-        project_id: typing.Optional[ObjectId] = None,
+        project_id: typing.Optional[str] = None,
         name: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TaskListResponse:
@@ -182,7 +229,7 @@ class AsyncTasksClient:
 
         Parameters
         ----------
-        project_id : typing.Optional[ObjectId]
+        project_id : typing.Optional[str]
 
         name : typing.Optional[str]
 
@@ -221,6 +268,7 @@ class AsyncTasksClient:
         idempotency_key: str,
         name: str,
         project_name: str,
+        external_id: typing.Optional[str] = OMIT,
         metadata_patch: typing.Optional[MetadataPatchDto] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TaskResponse:
@@ -237,6 +285,9 @@ class AsyncTasksClient:
 
         project_name : str
             Slug of an existing project
+
+        external_id : typing.Optional[str]
+            Optional client correlation id (e.g. agent session/run); bookkeeping only — not unique
 
         metadata_patch : typing.Optional[MetadataPatchDto]
 
@@ -274,18 +325,19 @@ class AsyncTasksClient:
             idempotency_key=idempotency_key,
             name=name,
             project_name=project_name,
+            external_id=external_id,
             metadata_patch=metadata_patch,
             request_options=request_options,
         )
         return _response.data
 
-    async def get(self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None) -> TaskDetailResponse:
+    async def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> TaskDetailResponse:
         """
         Materialized state — name, current state, metadata, attachments — plus open requests awaiting a human.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -316,4 +368,54 @@ class AsyncTasksClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get(id, request_options=request_options)
+        return _response.data
+
+    async def events(
+        self,
+        id: str,
+        *,
+        cursor: typing.Optional[str] = None,
+        limit: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TaskEventsResponse:
+        """
+        Ascending cursor tail over the task's event log; pass nextCursor back as ?cursor= to resume. An absent cursor starts at the first event.
+
+        Parameters
+        ----------
+        id : str
+
+        cursor : typing.Optional[str]
+
+        limit : typing.Optional[int]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TaskEventsResponse
+            OK
+
+        Examples
+        --------
+        import asyncio
+
+        from pumpup import AsyncPumpUp
+
+        client = AsyncPumpUp(
+            "0",
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.tasks.events(
+                id="id",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.events(id, cursor=cursor, limit=limit, request_options=request_options)
         return _response.data

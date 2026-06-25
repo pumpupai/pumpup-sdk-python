@@ -4,7 +4,6 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.object_id import ObjectId
 from ..types.project_list_response import ProjectListResponse
 from ..types.project_response import ProjectResponse
 from .raw_client import AsyncRawProjectsClient, RawProjectsClient
@@ -56,13 +55,13 @@ class ProjectsClient:
         _response = self._raw_client.list(name=name, request_options=request_options)
         return _response.data
 
-    def get(self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectResponse:
+    def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectResponse:
         """
         Includes the declared step graph.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -142,13 +141,13 @@ class AsyncProjectsClient:
         _response = await self._raw_client.list(name=name, request_options=request_options)
         return _response.data
 
-    async def get(self, id: ObjectId, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectResponse:
+    async def get(self, id: str, *, request_options: typing.Optional[RequestOptions] = None) -> ProjectResponse:
         """
         Includes the declared step graph.
 
         Parameters
         ----------
-        id : ObjectId
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

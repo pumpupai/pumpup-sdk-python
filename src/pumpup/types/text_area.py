@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.pydantic_utilities import UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
@@ -13,18 +13,11 @@ class TextArea(UniversalBaseModel):
     id: str
     label: str
     max_length: typing_extensions.Annotated[
-        typing.Optional[int], FieldMetadata(alias="maxLength"), pydantic.Field(alias="maxLength")
-    ] = None
+        typing.Optional[int], FieldMetadata(alias="maxLength"), pydantic.Field(alias="maxLength", default=None)
+    ]
     min_length: typing_extensions.Annotated[
-        typing.Optional[int], FieldMetadata(alias="minLength"), pydantic.Field(alias="minLength")
-    ] = None
-    required: typing.Optional[bool] = None
+        typing.Optional[int], FieldMetadata(alias="minLength"), pydantic.Field(alias="minLength", default=None)
+    ]
+    required: bool
 
-    if IS_PYDANTIC_V2:
-        model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
-    else:
-
-        class Config:
-            frozen = True
-            smart_union = True
-            extra = pydantic.Extra.allow
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)
